@@ -1,8 +1,5 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { NotificationProvider } from "@/components/ui/notification-system"
 import { TourProvider } from "@/components/ui/guided-tour"
@@ -37,14 +34,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+      <body className={`font-sans antialiased`}>
         <Suspense fallback={null}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             <NotificationProvider>
               <TourProvider>{children}</TourProvider>
             </NotificationProvider>
           </ThemeProvider>
-          <Analytics />
         </Suspense>
       </body>
     </html>
