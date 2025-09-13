@@ -53,7 +53,7 @@ export function SellForm({ token }: SellFormProps) {
       toast({
         title: "Invalid Amount",
         description: `Please enter a ${token.toUpperCase()} amount to sell`,
-        variant: "destructive",
+        // variant: "destructive",
       })
       return
     }

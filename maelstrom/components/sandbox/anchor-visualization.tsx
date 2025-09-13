@@ -8,7 +8,7 @@ import { Anchor, Play, Pause } from "lucide-react"
 
 export function AnchorVisualization() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
   const [isAnimating, setIsAnimating] = useState(true)
   const [anchorData, setAnchorData] = useState({
     buyPrice: 3250,

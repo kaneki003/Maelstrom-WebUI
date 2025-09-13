@@ -37,7 +37,7 @@ export function TradeSimulator() {
       toast({
         title: "Invalid Amount",
         description: "Please enter an amount to simulate",
-        variant: "destructive",
+        // variant: "destructive",
       })
       return
     }

@@ -12,7 +12,7 @@ interface LiquidityFlowWidgetProps {
 
 export function LiquidityFlowWidget({ token }: LiquidityFlowWidgetProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
   const [tradeSize, setTradeSize] = useState([1])
   const [flowIntensity, setFlowIntensity] = useState(0.5)
 

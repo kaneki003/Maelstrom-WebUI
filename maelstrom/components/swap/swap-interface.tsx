@@ -117,7 +117,7 @@ export function SwapInterface() {
       toast({
         title: "Invalid Amount",
         description: "Please enter an amount to swap",
-        variant: "destructive",
+        // variant: "destructive",
       })
       return
     }

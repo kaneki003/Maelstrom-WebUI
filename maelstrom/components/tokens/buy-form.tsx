@@ -50,7 +50,7 @@ export function BuyForm({ token }: BuyFormProps) {
       toast({
         title: "Invalid Amount",
         description: "Please enter an ETH amount to buy",
-        variant: "destructive",
+        // variant: "destructive",
       })
       return
     }

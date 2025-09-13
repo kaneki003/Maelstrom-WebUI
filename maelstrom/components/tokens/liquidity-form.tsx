@@ -47,7 +47,7 @@ export function LiquidityForm({ token }: LiquidityFormProps) {
       toast({
         title: "Invalid Amounts",
         description: "Please enter both ETH and token amounts",
-        variant: "destructive",
+        // variant: "destructive",
       })
       return
     }
@@ -65,7 +65,7 @@ export function LiquidityForm({ token }: LiquidityFormProps) {
       toast({
         title: "Invalid Amount",
         description: "Please enter LP token amount to withdraw",
-        variant: "destructive",
+        // variant: "destructive",
       })
       return
     }
