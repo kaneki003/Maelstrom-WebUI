@@ -5,7 +5,7 @@ import { RecentSwaps } from "@/components/swap/recent-swaps"
 
 export default function SwapPage() {
   return (
-    <div className="min-h-screen bg-background liquid-bg">
+    <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
@@ -17,18 +17,9 @@ export default function SwapPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Swap Interface */}
             <div className="lg:col-span-2">
               <SwapInterface />
             </div>
-
-            {/* Side Panel */}
-            <div className="space-y-6">
-              <SwapStats />
-              <RecentSwaps />
-            </div>
-          </div>
         </div>
       </main>
     </div>

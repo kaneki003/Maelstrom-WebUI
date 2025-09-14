@@ -150,7 +150,7 @@ export function LiquidityFlowWidget({ token }: LiquidityFlowWidgetProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Canvas */}
-        <div className="relative bg-gradient-to-r from-bg-900 to-bg-800 rounded-lg overflow-hidden">
+        <div className="relative bg-linear-to-r from-bg-900 to-bg-800 rounded-lg overflow-hidden">
           <canvas ref={canvasRef} className="w-full h-32" />
 
           {/* Pool Labels */}

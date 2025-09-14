@@ -170,7 +170,7 @@ export function AnchorVisualization() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Visualization Canvas */}
-        <div className="relative bg-gradient-to-b from-bg-900 to-bg-800 rounded-lg overflow-hidden">
+        <div className="relative bg-linear-to-b from-bg-900 to-bg-800 rounded-lg overflow-hidden">
           <canvas ref={canvasRef} className="w-full h-64" />
           <div className="absolute top-2 right-2">
             <Badge variant="secondary" className="text-xs">

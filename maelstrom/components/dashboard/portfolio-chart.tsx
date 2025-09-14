@@ -64,7 +64,7 @@ export function PortfolioChart() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="relative h-64 bg-gradient-to-b from-muted/20 to-transparent rounded-lg overflow-hidden">
+        <div className="relative h-64 bg-linear-to-b from-muted/20 to-transparent rounded-lg overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 800 250" preserveAspectRatio="none">
             <defs>
               <linearGradient id="portfolioGradient" x1="0%" y1="0%" x2="0%" y2="100%">

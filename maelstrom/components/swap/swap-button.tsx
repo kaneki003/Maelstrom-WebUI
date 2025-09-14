@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { forwardRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
@@ -45,14 +44,14 @@ export const SwapButton = forwardRef<HTMLButtonElement, SwapButtonProps>(
         variant="outline"
         size="sm"
         className={cn(
-          "relative overflow-hidden w-12 h-12 rounded-full border-2 border-accent/30 bg-accent/10 hover:bg-accent/20 transition-all duration-300 group",
+          "relative overflow-hidden w-8 h-8 rounded-full border border-accent/30 bg-accent/10 hover:bg-accent/20 transition-all duration-300 group p-0",
           isAnimating && "scale-110 rotate-180",
           className,
         )}
       >
         <ArrowUpDown
           className={cn(
-            "h-5 w-5 text-accent transition-all duration-300 group-hover:scale-110",
+            "h-4 w-4 text-accent transition-all duration-300 group-hover:scale-110",
             isAnimating && "rotate-180",
           )}
         />
@@ -63,16 +62,13 @@ export const SwapButton = forwardRef<HTMLButtonElement, SwapButtonProps>(
             key={ripple.id}
             className="absolute rounded-full bg-accent/30 animate-ripple pointer-events-none"
             style={{
-              left: ripple.x - 10,
-              top: ripple.y - 10,
-              width: 20,
-              height: 20,
+              left: ripple.x - 8,
+              top: ripple.y - 8,
+              width: 16,
+              height: 16,
             }}
           />
         ))}
-
-        {/* Glow Effect */}
-        <div className="absolute inset-0 rounded-full bg-accent/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </Button>
     )
   },

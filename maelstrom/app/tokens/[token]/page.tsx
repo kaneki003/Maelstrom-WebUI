@@ -13,7 +13,7 @@ interface TokenPageProps {
 
 export default function TokenPage({ params }: TokenPageProps) {
   return (
-    <div className="min-h-screen bg-background liquid-bg">
+    <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <TokenHeader token={params.token} />

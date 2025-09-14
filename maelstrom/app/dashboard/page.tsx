@@ -6,7 +6,7 @@ import { RecentActivity } from "@/components/dashboard/recent-activity"
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-background liquid-bg">
+    <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">

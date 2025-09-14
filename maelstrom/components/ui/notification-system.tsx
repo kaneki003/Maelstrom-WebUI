@@ -108,7 +108,7 @@ function NotificationCard({
       )}
     >
       <div className="flex items-start gap-3">
-        <Icon className="h-5 w-5 mt-0.5 flex-shrink-0" />
+        <Icon className="h-5 w-5 mt-0.5 shrink-0" />
         <div className="flex-1 min-w-0">
           <h4 className="font-medium text-sm">{notification.title}</h4>
           <p className="text-sm opacity-90 mt-1">{notification.message}</p>

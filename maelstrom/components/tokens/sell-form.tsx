@@ -135,7 +135,7 @@ export function SellForm({ token }: SellFormProps) {
           <Card className="bg-yellow-500/5 border-yellow-500/20">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 flex-shrink-0" />
+                <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 shrink-0" />
                 <div className="text-sm">
                   <p className="font-medium text-yellow-500 mb-1">Large Order Warning</p>
                   <p className="text-muted-foreground">
@@ -184,7 +184,7 @@ export function SellForm({ token }: SellFormProps) {
         <Card className="bg-orange-500/5 border-orange-500/20">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <Info className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0" />
+              <Info className="h-5 w-5 text-orange-500 mt-0.5 shrink-0" />
               <div className="text-sm">
                 <p className="font-medium text-orange-500 mb-1">How Sell Orders Work</p>
                 <p className="text-muted-foreground">

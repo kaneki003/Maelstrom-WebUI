@@ -165,7 +165,7 @@ export function BuyForm({ token }: BuyFormProps) {
         <Card className="bg-blue-500/5 border-blue-500/20">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <Info className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+              <Info className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
               <div className="text-sm">
                 <p className="font-medium text-blue-500 mb-1">How Buy Orders Work</p>
                 <p className="text-muted-foreground">

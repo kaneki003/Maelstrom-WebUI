@@ -35,7 +35,7 @@ export function ProductShowcase() {
   const [activeItem, setActiveItem] = useState(0)
 
   return (
-    <section className="py-24 bg-gradient-to-b from-background to-muted/20">
+    <section className="py-24 bg-linear-to-b from-background to-muted/20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
@@ -95,14 +95,14 @@ export function ProductShowcase() {
           {/* Preview Image */}
           <div className="relative">
             <Card className="overflow-hidden border-border/50 shadow-medium">
-              <div className="relative aspect-[3/2] bg-muted/20">
+              <div className="relative aspect-3/2 bg-muted/20">
                 <Image
                   src={showcaseItems[activeItem].image || "/placeholder.svg"}
                   alt={showcaseItems[activeItem].title}
                   fill
                   className="object-cover transition-all duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-background/80 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
                   <Button
                     variant="secondary"

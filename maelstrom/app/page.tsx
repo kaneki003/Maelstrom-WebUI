@@ -10,15 +10,15 @@ import { RealTimeTicker } from "@/components/ui/real-time-ticker"
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background liquid-bg">
+    <div className="min-h-screen bg-background">
       <Header />
       <RealTimeTicker />
       <main>
         <HeroSection />
         <ValuePropsSection />
         <StatsSection />
-        <ProductShowcase />
-        <WaitlistSection />
+        {/* <ProductShowcase />
+        <WaitlistSection /> */}
       </main>
       <Footer />
       <WelcomeTour />

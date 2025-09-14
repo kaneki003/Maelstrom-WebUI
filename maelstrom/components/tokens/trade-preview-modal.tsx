@@ -102,7 +102,7 @@ export function TradePreviewModal({
             <Card className="bg-red-500/5 border-red-500/20">
               <CardContent className="p-3">
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
                   <div className="text-sm">
                     <p className="font-medium text-red-500">High Price Impact</p>
                     <p className="text-muted-foreground">
@@ -118,7 +118,7 @@ export function TradePreviewModal({
           <Card className="bg-accent/5 border-accent/20">
             <CardContent className="p-3">
               <div className="flex items-start gap-2">
-                <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
+                <CheckCircle className="h-4 w-4 text-accent mt-0.5 shrink-0" />
                 <div className="text-sm">
                   <p className="font-medium text-accent">Price Anchor Movement</p>
                   <p className="text-muted-foreground">

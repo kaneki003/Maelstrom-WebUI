@@ -82,7 +82,7 @@ export function SwapSettings({
             <Card className="bg-blue-500/5 border-blue-500/20">
               <CardContent className="p-3">
                 <div className="flex items-start gap-2">
-                  <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <Info className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
                   <div className="text-sm">
                     <p className="font-medium text-blue-500">Slippage Tolerance</p>
                     <p className="text-muted-foreground">
