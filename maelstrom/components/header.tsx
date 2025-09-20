@@ -38,8 +38,11 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative">
-              <Waves className="h-8 w-8 text-accent transition-all duration-300 group-hover:text-accent-cyan-2 group-hover:scale-110" />
-              <div className="absolute inset-0 rounded-full bg-accent/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <img 
+              src="/logo_maelstrom.svg" 
+              alt="Maelstrom Logo" 
+              className="h-8 w-8 transition-all duration-300 group-hover:scale-110 dark:invert" 
+              />
             </div>
             <span className="text-xl font-bold gradient-text">Maelstrom</span>
           </Link>

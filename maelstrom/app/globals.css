@@ -1,7 +1,19 @@
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@700,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+/* Font family utilities */
+.font-clash-display {
+  font-family: 'ClashDisplay-Bold', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.font-plus-jakarta {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
 
 :root {
   /* Maelstrom UI Design Tokens - Light Mode */

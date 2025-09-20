@@ -7,58 +7,102 @@ import { LiquidCanvas } from "@/components/ui/liquid-canvas";
 import { AnimatedCircularText } from "@/components/ui/animated-circular-text";
 import CircularText from "@/components/CircularText";
 import { ArrowRight, Play } from "lucide-react";
+import { WaveRippleCanvas } from "../ui/wave-ripple-canvas";
 
 export function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [textPositions, setTextPositions] = useState<Array<{
+    text: string;
+    size: number;
+    x: number;
+    y: number;
+    font?: string;
+    weight?: string;
+  }>>([]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      setMousePosition({ x, y });
+    };
+
+    const calculateTextPositions = () => {
+      const centerY = window.innerHeight / 2;
+      setTextPositions([
+        {
+          text: "Liquid Trading",
+          size: 100,
+          x: window.innerWidth / 2,
+          y: centerY - 55, // Adjusted position
+          weight: '700'
+        },
+        {
+          text: "Redefined",
+          size: 100,
+          x: window.innerWidth / 2,
+          y: centerY + 45, // Adjusted position
+          weight: '700'
+        },
+        {
+          text: "Experience the future of DeFi with fluid price discoverey",
+          size: 28,
+          x: window.innerWidth / 2,
+          y: centerY + 120, // Adjusted position
+          font: 'Plus Jakarta Sans, sans-serif',
+          weight: '500'
+        }
+      ]);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("resize", calculateTextPositions);
+    calculateTextPositions();
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", calculateTextPositions);
+    };
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Liquid Canvas Background */}
-      <div className="absolute inset-0 z-0">
-        <LiquidCanvas mousePosition={mousePosition} />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#001a47]">
+      {/* Wave Ripple Effect */}
+      <div className="absolute inset-0 z-10">
+        <WaveRippleCanvas 
+          mousePosition={mousePosition} 
+          texts={textPositions}
+          className="opacity-90"
+        />
       </div>
 
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-linear-to-b from-background/20 via-background/40 to-background/80 z-10" />
+      {/* Gradient Overlay - adjusted for dark blue background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#001a47]/10 via-[#001a47]/30 to-[#001a47]/70 pointer-events-none z-20" />
 
-      {/* Content */}
-      <div className="relative z-20 container mx-auto px-4 text-center">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Animated Circular Text */}
-            <div className="absolute inset-0">
-            </div>
-              <CircularText
-              text="LIQUIDITY*MAELSTROM*"
+      {/* Visible Content */}
+      <div className="relative container mx-auto px-4 text-center z-30">
+        <div className="max-w-4xl mx-auto">
+          {/* Animated Circular Text - Positioned above */}
+          <div className="absolute top-[-50px] left-1/2 transform -translate-x-1/2">
+            <CircularText
+              text="MAELSTROM*LIQUIDITY*"
               onHover="speedUp"
               spinDuration={20}
               className="custom-class"
-              />
-
-          {/* Main Headline */}
-          <div className="space-y-4">
-            <h1 className="text-5xl md:text-7xl font-bold text-balance">
-              <span className="gradient-text-animated">Liquid Trading</span>
-              <br />
-              <span className="text-foreground">Redefined</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto text-pretty">
-              Experience the future of DeFi with fluid price discovery, deep
-              liquidity pools, and seamless trading mechanics that adapt to
-              market dynamics.
-            </p>
+            />
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          {/* Hidden but accessible text */}
+          <div className="sr-only">
+            <h1>MAELSTROM LIQUIDITY</h1>
+            <p>Next Generation DeFi Protocol</p>
+          </div>
+
+          {/* Spacer for canvas text */}
+          <div className="h-[300px]"></div>
+
+          {/* CTA Buttons - Positioned below canvas text */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-32">
             <Button
               asChild
               size="lg"
@@ -79,7 +123,7 @@ export function HeroSection() {
             </Button>
           </div>
 
-          {/* Trust Indicators */}
+          {/* Trust Indicators - Below CTA buttons */}
           <div className="pt-8 flex flex-wrap justify-center items-center gap-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -97,14 +141,14 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+      {/* Scroll Indicator
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-40">
         <div className="animate-bounce">
           <div className="w-6 h-10 border-2 border-accent/50 rounded-full flex justify-center">
             <div className="w-1 h-3 bg-accent rounded-full mt-2 animate-pulse" />
           </div>
         </div>
-      </div>
+      </div> */}
     </section>
   );
 }

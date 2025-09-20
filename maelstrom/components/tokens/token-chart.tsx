@@ -1,107 +1,123 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, BarChart3, Maximize2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { TrendingUp, TrendingDown } from "lucide-react"
+import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 
 interface TokenChartProps {
   token: string
 }
 
 export function TokenChart({ token }: TokenChartProps) {
-  // Mock chart data - in a real app, this would come from an API
-  const chartData = Array.from({ length: 50 }, (_, i) => ({
-    time: Date.now() - (50 - i) * 60000,
-    price: 3200 + Math.sin(i * 0.2) * 100 + Math.random() * 50,
-  }))
+  const [timeRange, setTimeRange] = useState("1H")
+  
+  // Mock data - in real app this would come from an API
+  const generateChartData = (points: number) => {
+    const data = []
+    const basePrice = 3200
+    for (let i = 0; i < points; i++) {
+      const time = new Date(Date.now() - (points - i) * 60000)
+      const price = basePrice + Math.sin(i * 0.2) * 100 + Math.random() * 50
+      data.push({
+        time: time.toISOString(),
+        price: price,
+        formattedTime: time.toLocaleTimeString(),
+      })
+    }
+    return data
+  }
 
-  const currentPrice = chartData[chartData.length - 1]?.price || 3200
-  const previousPrice = chartData[chartData.length - 2]?.price || 3200
-  const priceChange = ((currentPrice - previousPrice) / previousPrice) * 100
+  const chartData = generateChartData(60)
+  const currentPrice = chartData[chartData.length - 1]?.price || 0
+  const firstPrice = chartData[0]?.price || 0
+  const priceChange = ((currentPrice - firstPrice) / firstPrice) * 100
   const isPositive = priceChange >= 0
 
+  const formatPrice = (price: number) => `$${price.toFixed(2)}`
+
   return (
-    <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-medium">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-accent" />
-            Price Chart
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant={isPositive ? "default" : "destructive"} className="text-xs">
-              {isPositive ? "+" : ""}
-              {priceChange.toFixed(2)}%
-            </Badge>
-            <Button variant="ghost" size="sm">
-              <Maximize2 className="h-4 w-4" />
-            </Button>
+    <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col space-y-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-2xl font-bold">${currentPrice.toFixed(2)}</div>
+              <div className="flex items-center gap-2 mt-1">
+                <div className={`flex items-center gap-1 ${isPositive ? "text-green-500" : "text-red-500"}`}>
+                  {isPositive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                  <span className="text-sm font-medium">
+                    {isPositive ? "+" : ""}
+                    {priceChange.toFixed(2)}%
+                  </span>
+                </div>
+                <Badge variant="secondary" className="text-xs">
+                  24h
+                </Badge>
+              </div>
+            </div>
+            <div className="flex gap-1">
+              {["1H", "4H", "1D", "1W", "1M"].map((range) => (
+                <Button
+                  key={range}
+                  variant={range === timeRange ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setTimeRange(range)}
+                  className="text-xs"
+                >
+                  {range}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        {/* Simple SVG Chart */}
-        <div className="relative h-48 bg-linear-to-b from-muted/20 to-transparent rounded-lg overflow-hidden">
-          <svg className="w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="priceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgba(0, 216, 255, 0.3)" />
-                <stop offset="100%" stopColor="rgba(0, 216, 255, 0.05)" />
-              </linearGradient>
-            </defs>
-
-            {/* Price Line */}
-            <path
-              d={chartData
-                .map((point, i) => {
-                  const x = (i / (chartData.length - 1)) * 400
-                  const y = 200 - ((point.price - 3100) / 200) * 200
-                  return `${i === 0 ? "M" : "L"} ${x} ${y}`
-                })
-                .join(" ")}
-              stroke="rgba(0, 216, 255, 0.8)"
-              strokeWidth="2"
-              fill="none"
-            />
-
-            {/* Fill Area */}
-            <path
-              d={
-                chartData
-                  .map((point, i) => {
-                    const x = (i / (chartData.length - 1)) * 400
-                    const y = 200 - ((point.price - 3100) / 200) * 200
-                    return `${i === 0 ? "M" : "L"} ${x} ${y}`
-                  })
-                  .join(" ") + " L 400 200 L 0 200 Z"
-              }
-              fill="url(#priceGradient)"
-            />
-          </svg>
-
-          {/* Price Labels */}
-          <div className="absolute top-2 left-2 text-xs text-muted-foreground">${currentPrice.toFixed(0)}</div>
-          <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">1H</div>
-        </div>
-
-        {/* Chart Controls */}
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
-          <div className="flex items-center gap-2">
-            {["1H", "4H", "1D", "1W"].map((period) => (
-              <Button key={period} variant={period === "1H" ? "secondary" : "ghost"} size="sm" className="text-xs">
-                {period}
-              </Button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2 text-sm">
-            <TrendingUp className={`h-4 w-4 ${isPositive ? "text-green-500" : "text-red-500"}`} />
-            <span className={isPositive ? "text-green-500" : "text-red-500"}>
-              {isPositive ? "+" : ""}
-              {priceChange.toFixed(2)}%
-            </span>
-          </div>
+        <div className="h-[300px] mt-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+              <defs>
+                <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="rgb(0, 216, 255)" stopOpacity={0.2}/>
+                  <stop offset="95%" stopColor="rgb(0, 216, 255)" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <XAxis
+                dataKey="formattedTime"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: "#94a3b8" }}
+                interval="preserveStartEnd"
+              />
+              <YAxis
+                dataKey="price"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: "#94a3b8" }}
+                domain={['auto', 'auto']}
+                tickFormatter={formatPrice}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgba(15, 23, 42, 0.9)",
+                  border: "1px solid rgba(148, 163, 184, 0.2)",
+                  borderRadius: "6px",
+                }}
+                labelStyle={{ color: "#94a3b8" }}
+                formatter={(value: number) => [`$${value.toFixed(2)}`, "Price"]}
+              />
+              <Area
+                type="monotone"
+                dataKey="price"
+                stroke="rgb(0, 216, 255)"
+                strokeWidth={2}
+                fillOpacity={1}
+                fill="url(#colorPrice)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </CardContent>
     </Card>
