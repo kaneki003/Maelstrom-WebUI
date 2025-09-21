@@ -28,6 +28,48 @@ export interface TradeResult {
   timestamp: number
 }
 
+export interface PoolData {
+  token: string
+  symbol: string
+  totalLiquidity: string
+  liquidityChange24h: number
+  poolRatio: string
+  tradingFee: string
+  estimatedAPR: string
+  tokenReserves: {
+    token: {
+      amount: string
+      value: string
+      percentage: number
+    }
+    eth: {
+      amount: string
+      value: string
+      percentage: number
+    }
+  }
+  totalValue: string
+  availableChains: string[]
+  poolStatistics: {
+    totalFeesCollected: {
+      token: string
+      eth: string
+    }
+    volume24h: string
+    volume7d: string
+    poolAge: string
+  }
+  priceData: {
+    current: number
+    change24h: number
+    ethPrice: number
+    history: Array<{
+      timestamp: number
+      price: number
+    }>
+  }
+}
+
 // Mock pool data
 const mockPools: Pool[] = [
   {
@@ -181,6 +223,50 @@ export class MockApi {
       newBuyPrice: poolB.lastPriceBuyWAD,
       newSellPrice: poolB.lastPriceSellWAD,
       timestamp: Date.now(),
+    }
+  }
+}
+
+export function getPoolData(tokenSymbol: string): PoolData {
+  return {
+    token: tokenSymbol,
+    symbol: tokenSymbol.toUpperCase(),
+    totalLiquidity: "$148.37B",
+    liquidityChange24h: 2.31,
+    poolRatio: "0.0565",
+    tradingFee: "5.00%",
+    estimatedAPR: "597.40%",
+    tokenReserves: {
+      token: {
+        amount: "633.56K",
+        value: "$74.07B",
+        percentage: 49.9
+      },
+      eth: {
+        amount: "35.77K",
+        value: "$74.30B",
+        percentage: 50.1
+      }
+    },
+    totalValue: "$148.37B",
+    availableChains: ["base"],
+    poolStatistics: {
+      totalFeesCollected: {
+        token: "30.37K",
+        eth: "2.06M"
+      },
+      volume24h: "$12.45B",
+      volume7d: "N/A",
+      poolAge: "84 days"
+    },
+    priceData: {
+      current: 116907.79,
+      change24h: 174.46,
+      ethPrice: 2077096.13,
+      history: Array.from({ length: 100 }, (_, i) => ({
+        timestamp: Date.now() - (100 - i) * 600000,
+        price: 116000 + Math.sin(i * 0.1) * 1000 + Math.random() * 500
+      }))
     }
   }
 }

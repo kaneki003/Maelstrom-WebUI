@@ -14,7 +14,6 @@ const navigation = [
   { name: "Swap", href: "/swap" },
   { name: "Tokens", href: "/tokens" },
   { name: "Dashboard", href: "/dashboard" },
-  { name: "Sandbox", href: "/sandbox" },
 ]
 
 const popularTokens = [
@@ -67,7 +66,7 @@ export function Header() {
               </Link>
             ))}
 
-            {/* Tokens Dropdown */}
+            {/* Tokens Dropdown
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-accent">
@@ -85,7 +84,7 @@ export function Header() {
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </nav>
 
           {/* Right side actions */}
