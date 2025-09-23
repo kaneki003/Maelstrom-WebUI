@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { usePools } from "@/hooks/use-mock-api"
+import { usePools } from "@/hooks/use-pools"
 import { Search, ArrowUpDown, TrendingUp, TrendingDown, ExternalLink } from "lucide-react"
+import { TokenRow } from "../tokens/TokenRow"
+import { TokenRowSkeleton } from "../tokens/TokenRowSkeleton"
 
 type SortField = "symbol" | "tvl" | "volume24h" | "apy"
 type SortDirection = "asc" | "desc"
@@ -59,181 +61,46 @@ export function PoolsTable() {
       return sortDirection === "asc" ? aValue - bValue : bValue - aValue
     })
 
-  if (loading) {
-    return (
-      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle>Liquidity Pools</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="animate-pulse space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-12 bg-muted rounded" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
-    <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-medium">
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <CardTitle className="flex items-center gap-2">
-            Liquidity Pools
-            <Badge variant="secondary" className="text-xs">
-              {filteredAndSortedPools.length} pools
-            </Badge>
-          </CardTitle>
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search pools..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+    <div className="p-6">
+      {/* Table Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/90">
+          Your Active Pools
+        </h2>
+        <div className="text-sm text-muted-foreground/70">
+          Total Pools: {pools.length}
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="rounded-lg border border-border/50 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/20">
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleSort("symbol")}
-                    className="h-auto p-0 font-semibold"
-                  >
-                    Token
-                    <ArrowUpDown className="ml-2 h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleSort("tvl")}
-                    className="h-auto p-0 font-semibold"
-                  >
-                    TVL
-                    <ArrowUpDown className="ml-2 h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleSort("volume24h")}
-                    className="h-auto p-0 font-semibold"
-                  >
-                    24h Volume
-                    <ArrowUpDown className="ml-2 h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleSort("apy")}
-                    className="h-auto p-0 font-semibold"
-                  >
-                    APY
-                    <ArrowUpDown className="ml-2 h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredAndSortedPools.map((pool) => {
-                const spotPrice = (Number.parseFloat(pool.spotPrice) / 1e18).toFixed(0)
-                const priceChange = (Math.random() - 0.5) * 10 // Mock price change
-                const isPositive = priceChange >= 0
+      </div>
 
-                return (
-                  <TableRow key={pool.token} className="hover:bg-muted/10">
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
-                          <span className="text-sm font-bold text-accent">{pool.symbol.charAt(0)}</span>
-                        </div>
-                        <div>
-                          <p className="font-medium">{pool.symbol}</p>
-                          <p className="text-xs text-muted-foreground">{pool.name}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-semibold">${Number(pool.tvl).toLocaleString()}</p>
-                        <div className="flex items-center gap-1 text-xs">
-                          <TrendingUp className="h-3 w-3 text-green-500" />
-                          <span className="text-green-500">+5.2%</span>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-semibold">${Number(pool.volume24h).toLocaleString()}</p>
-                        <div className="flex items-center gap-1 text-xs">
-                          {isPositive ? (
-                            <TrendingUp className="h-3 w-3 text-green-500" />
-                          ) : (
-                            <TrendingDown className="h-3 w-3 text-red-500" />
-                          )}
-                          <span className={isPositive ? "text-green-500" : "text-red-500"}>
-                            {isPositive ? "+" : ""}
-                            {priceChange.toFixed(1)}%
-                          </span>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="bg-accent/10 text-accent">
-                        {pool.apy.toFixed(1)}%
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-semibold">
-                          {spotPrice} {pool.symbol}/ETH
-                        </p>
-                        <div className="flex items-center gap-1 text-xs">
-                          {isPositive ? (
-                            <TrendingUp className="h-3 w-3 text-green-500" />
-                          ) : (
-                            <TrendingDown className="h-3 w-3 text-red-500" />
-                          )}
-                          <span className={isPositive ? "text-green-500" : "text-red-500"}>
-                            {isPositive ? "+" : ""}
-                            {priceChange.toFixed(2)}%
-                          </span>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={`/tokens/${pool.token}`}>Trade</a>
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <ExternalLink className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Table Content with Glass Effect */}
+      <div className="relative space-y-3">
+        {loading ? (
+          // Loading state with skeleton rows
+          Array.from({ length: 3 }).map((_, i) => (
+            <TokenRowSkeleton key={i} />
+          ))
+        ) : pools.length > 0 ? (
+          // Pool list with hover effects
+          pools.map((pool) => (
+            <div
+              key={pool.id}
+              className="transform transition-all duration-200 hover:scale-[1.02] hover:shadow-glow-sm"
+            >
+              <TokenRow token={pool} />
+            </div>
+          ))
+        ) : (
+          // Empty state with glass effect
+          <div className="relative rounded-lg p-8 text-center backdrop-blur-sm border border-white/[0.05]
+            before:absolute before:inset-0 before:bg-background-800/30 before:-z-10">
+            <p className="text-muted-foreground/70">No active pools found</p>
+            <button className="mt-4 text-sm text-accent hover:text-accent-foreground transition-colors">
+              Explore Available Pools
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

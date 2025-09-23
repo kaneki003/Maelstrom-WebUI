@@ -15,26 +15,38 @@ interface TokenHeaderProps {
 
 export function TokenHeader({ token }: TokenHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-700 to-cyan-600 flex items-center justify-center">
-            <span className="text-lg font-bold">{token.charAt(0).toUpperCase()}</span>
+    <div className="relative p-6 rounded-lg overflow-hidden">
+      {/* Glass background with gradient */}
+      <div className="absolute inset-0 bg-background-800/40 backdrop-blur-xl" />
+      <div className="absolute inset-0 bg-gradient-to-br from-accent/[0.08] to-primary-500/[0.05]" />
+      <div className="absolute inset-0 border border-white/[0.05] rounded-lg" />
+
+      {/* Content */}
+      <div className="relative flex items-start gap-3">
+        {/* Enhanced token icon */}
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-500 to-primary-600 p-[1px]">
+          <div className="w-full h-full rounded-xl bg-gradient-to-br from-background-900 to-background-800 flex items-center justify-center">
+            <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent-500 to-primary-500">
+              {token.charAt(0).toUpperCase()}
+            </span>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              {token.toUpperCase()} / ETH
-              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            </h1>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="outline" className="text-xs border-blue-700/20">
-                {token.toUpperCase()}-ETH Pool
-              </Badge>
-              <div className="flex items-center gap-1 text-xs text-foreground/60">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                Live data
-              </div>
-            </div>
+        </div>
+
+        {/* Token info */}
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold flex items-center gap-2 font-clash-display">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/90">
+              {token.toUpperCase()} / ETH Pool
+            </span>
+            <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 animate-pulse" />
+          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge 
+              variant="secondary"
+              className="text-xs bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 text-emerald-400"
+            >
+              Active
+            </Badge>
           </div>
         </div>
       </div>

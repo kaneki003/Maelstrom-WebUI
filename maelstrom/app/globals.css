@@ -17,7 +17,8 @@
 
 :root {
   /* Maelstrom UI Design Tokens - Light Mode */
-  --background: oklch(1 0 0);
+  --background: radial-gradient(100% 100% at 0% 0%, oklch(0.18 0.04 240) 0%, oklch(0.12 0.04 240) 45%, oklch(0.08 0.04 240) 100%), 
+                radial-gradient(100% 100% at 100% 100%, oklch(0.25 0.08 240) 0%, oklch(0.12 0.04 240) 45%, oklch(0.08 0.04 240) 100%);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -178,6 +179,27 @@
 }
 
 @layer utilities {
+  .bg-gradient-pattern {
+    background: var(--background);
+    position: relative;
+    isolation: isolate;
+  }
+  .bg-gradient-pattern::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(100% 100% at 0% 0%, var(--bg-700) 0%, var(--bg-800) 45%, transparent 100%);
+    pointer-events: none;
+    z-index: -2;
+  }
+  .bg-gradient-pattern::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(100% 100% at 100% 100%, var(--primary-600) 0%, var(--bg-800) 45%, transparent 100%);
+    pointer-events: none;
+    z-index: -1;
+  }
   .glow-primary {
     box-shadow: var(--glow-primary);
   }

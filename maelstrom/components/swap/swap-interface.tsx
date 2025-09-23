@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SwapSettings } from "@/components/swap/swap-settings";
 import { ExchangeRates, TokenSelector } from "@/components/swap/token-selector";
 import { SwapPreviewModal } from "@/components/swap/swap-preview-modal";
 import { BuyForm } from "@/components/swap/buy-form";
@@ -147,32 +146,33 @@ export function SwapInterface() {
 
   return (
     <div className="w-full max-w-md mx-auto p-4">
-      <div className="relative overflow-hidden rounded-2xl">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20 backdrop-blur-md" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--primary)/8%,transparent_50%)] animate-gradient" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--accent)/8%,transparent_50%)] animate-gradient" />
-
-        <div className="relative p-4 bg-black/20 border border-white/[0.08]">
+      <div className="relative overflow-hidden rounded-3xl shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-800/95 to-bg-900/95 backdrop-blur-xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--accent-cyan)/10%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--primary-500)/10%,transparent_50%)]" />
+        <div className="absolute inset-0 border border-white/[0.05] rounded-3xl bg-gradient-to-b from-white/[0.05] to-transparent" />
+        
+        <div className="relative p-6 backdrop-blur-sm">
           {/* Top Navigation */}
           <div className="mb-6">
             <Tabs defaultValue="swap" className="w-full">
               <div className="flex items-center justify-between mb-4">
-                <TabsList className="grid grid-cols-3 bg-black/40">
+                <TabsList className="grid grid-cols-3 bg-black/20 p-1 rounded-2xl backdrop-blur-md border border-white/[0.05]">
                   <TabsTrigger
                     value="swap"
-                    className="data-[state=active]:bg-white/10"
+                    className="data-[state=active]:bg-gradient-to-b data-[state=active]:from-accent-cyan/20 data-[state=active]:to-primary-600/20 data-[state=active]:border-accent-cyan/20 data-[state=active]:shadow-lg data-[state=active]:text-accent-cyan rounded-xl transition-all duration-200"
                   >
                     Swap
                   </TabsTrigger>
                   <TabsTrigger
                     value="buy"
-                    className="data-[state=active]:bg-white/10"
+                    className="data-[state=active]:bg-gradient-to-b data-[state=active]:from-accent-cyan/20 data-[state=active]:to-primary-600/20 data-[state=active]:border-accent-cyan/20 data-[state=active]:shadow-lg data-[state=active]:text-accent-cyan rounded-xl transition-all duration-200"
                   >
                     Buy
                   </TabsTrigger>
                   <TabsTrigger
                     value="sell"
-                    className="data-[state=active]:bg-white/10"
+                    className="data-[state=active]:bg-gradient-to-b data-[state=active]:from-accent-cyan/20 data-[state=active]:to-primary-600/20 data-[state=active]:border-accent-cyan/20 data-[state=active]:shadow-lg data-[state=active]:text-accent-cyan rounded-xl transition-all duration-200"
                   >
                     Sell
                   </TabsTrigger>
@@ -181,9 +181,9 @@ export function SwapInterface() {
 
               <TabsContent value="swap" className="mt-2">
                 <div className="space-y-1">
-                  <div className="relative bg-white/5 hover:bg-white/10 transition-colors rounded-xl p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-lg font-medium text-white">Sell</div>
+                  <div className="relative bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 rounded-2xl p-5 border border-white/[0.05] shadow-lg backdrop-blur-md group">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-lg font-medium text-white/90 font-plus-jakarta">Sell</div>
                       <TokenSelector
                         selectedToken={swapState.tokenA}
                         onTokenChange={handleTokenAChange}
@@ -194,11 +194,11 @@ export function SwapInterface() {
                         placeholder="0.00"
                         value={swapState.amountA}
                         onChange={(e) => handleAmountAChange(e.target.value)}
-                        className="w-full h-16 text-3xl font-medium bg-black/20 rounded-lg px-4 
-                          border-transparent focus:border-accent/50 focus:ring-1 focus:ring-accent/50
-                          placeholder:text-white/30 transition-all duration-200"
+                        className="w-full h-16 text-3xl font-medium bg-black/10 group-hover:bg-black/20 rounded-xl px-4 
+                          border border-white/[0.05] focus:border-accent-cyan/30 focus:ring-2 focus:ring-accent-cyan/20
+                          placeholder:text-white/20 transition-all duration-300 font-plus-jakarta"
                       />
-                      <div className="absolute right-3 bottom-2 text-sm text-white/50">
+                      <div className="absolute right-3 bottom-2 text-sm text-white/40 font-medium">
                         ≈ $0.00
                       </div>
                     </div>
@@ -210,13 +210,14 @@ export function SwapInterface() {
                       variant="ghost"
                       size="sm"
                       onClick={handleSwapTokens}
-                      className="h-10 w-10 rounded-xl bg-black/40 hover:bg-white/10 border-white/10 p-0"
+                      className="h-12 w-12 rounded-2xl bg-gradient-to-b from-accent-cyan/20 to-primary-600/20 hover:from-accent-cyan/30 hover:to-primary-600/30
+                        border border-white/10 p-0 shadow-lg hover:shadow-accent-cyan/20 transition-all duration-300 backdrop-blur-sm"
                     >
-                      <ArrowDownUp className="h-4 w-4" />
+                      <ArrowDownUp className="h-5 w-5 text-accent-cyan" />
                     </Button>
                   </div>
 
-                  <div className="relative bg-white/5 hover:bg-white/10 transition-colors rounded-xl p-4">
+                  <div className="relative bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 rounded-2xl p-5 border border-white/[0.05] shadow-lg backdrop-blur-md group">
                     <div className="flex items-center justify-between mb-1">
                       <div className="text-lg font-medium text-white">Buy</div>
                       <TokenSelector
@@ -242,10 +243,10 @@ export function SwapInterface() {
 
                 {/* Swap Details */}
                 {swapState.amountA && swapState.amountB && (
-                  <div className="mt-4 space-y-2 p-3 bg-white/5 rounded-lg">
+                  <div className="mt-5 space-y-3 p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl backdrop-blur-sm">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Rate</span>
-                      <span>
+                      <span className="text-white/50 font-medium">Rate</span>
+                      <span className="text-white/80 font-medium">
                         1 {swapState.tokenA.toUpperCase()} ={" "}
                         {exchangeRates[swapState.tokenA]?.[
                           swapState.tokenB
@@ -254,8 +255,8 @@ export function SwapInterface() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Fee</span>
-                      <span>~$12.50</span>
+                      <span className="text-white/50 font-medium">Fee</span>
+                      <span className="text-white/80 font-medium">~$12.50</span>
                     </div>
                   </div>
                 )}
@@ -264,10 +265,13 @@ export function SwapInterface() {
                 <Button
                   onClick={handlePreviewSwap}
                   disabled={!swapState.amountA || !swapState.amountB || loading}
-                  className="w-full h-12 mt-6 bg-accent hover:bg-accent/90 text-white font-medium rounded-xl"
+                  className="w-full h-14 mt-6 bg-gradient-to-r from-accent-cyan to-primary-500 hover:from-accent-cyan/90 hover:to-primary-500/90 
+                    text-white font-semibold rounded-xl shadow-lg hover:shadow-accent-cyan/25 transition-all duration-300 
+                    disabled:from-gray-600/50 disabled:to-gray-700/50 disabled:cursor-not-allowed disabled:text-white/50
+                    border border-white/[0.05] backdrop-blur-sm font-plus-jakarta text-base"
                 >
                   {loading ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white" />
                   ) : (
                     "Preview Swap"
                   )}

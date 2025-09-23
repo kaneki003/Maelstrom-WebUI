@@ -108,61 +108,70 @@ export function BuyForm({ onExecute }: BuyFormProps) {
 
   return (
     <div className="space-y-4">
-      <div className="relative bg-white/5 hover:bg-white/10 transition-colors rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-muted-foreground">
+      <div className="relative bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 rounded-2xl p-5 border border-white/[0.05] shadow-lg backdrop-blur-md group">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm text-white/70 font-medium font-plus-jakarta">
             You're {isUsdInput ? "paying" : "receiving"}
           </span>
           <button
             onClick={handleSwapInputType}
-            className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 border border-white/[0.05] bg-white/[0.02]"
           >
-            <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
+            <ArrowDownUp className="h-4 w-4 text-accent-cyan" />
           </button>
         </div>
-        <div className="relative flex items-center">
-          {isUsdInput && <span className="text-5xl font-medium mr-1">$</span>}
+        <div className="relative flex items-center bg-black/10 group-hover:bg-black/20 rounded-xl p-4 transition-all duration-300">
+          {isUsdInput && <span className="text-4xl font-medium mr-2 font-plus-jakarta text-white/90">$</span>}
           <input
             type="text"
             inputMode="decimal"
             placeholder="0"
             value={isUsdInput ? usdAmount : tokenAmount}
             onChange={(e) => handleInputChange(e.target.value)}
-            className="w-full bg-transparent text-5xl font-medium outline-none placeholder:text-muted-foreground/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full bg-transparent text-4xl font-medium outline-none placeholder:text-white/20 
+              [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+              font-plus-jakarta text-white/90 transition-all duration-300"
           />
           {!isUsdInput && (
-            <div>
+            <div className="ml-2">
               <TokenSelector selectedToken={token} onTokenChange={setToken} />
             </div>
           )}
-          {/* {!isUsdInput && <div className="text-xl font-medium ml-2">ETH</div>} */}
         </div>
       </div>
 
-      <div className="relative bg-white/5 hover:bg-white/10 transition-colors rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-muted-foreground">
+      <div className="relative bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 rounded-2xl p-5 border border-white/[0.05] shadow-lg backdrop-blur-md group">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm text-white/70 font-medium font-plus-jakarta">
             You'll {isUsdInput ? "receive" : "pay"}
           </span>
         </div>
-        <div className="relative flex items-center">
-          {!isUsdInput && <span className="text-5xl font-medium mr-1">$</span>}
-          <div className="text-5xl font-medium w-full">
+        <div className="relative flex items-center bg-black/10 group-hover:bg-black/20 rounded-xl p-4 transition-all duration-300">
+          {!isUsdInput && <span className="text-4xl font-medium mr-2 font-plus-jakarta text-white/90">$</span>}
+          <div className="text-4xl font-medium w-full font-plus-jakarta text-white/90">
             {isUsdInput ? tokenAmount || "0" : usdAmount || "0"}
           </div>
           {isUsdInput && (
-            <div>
+            <div className="ml-2">
               <TokenSelector selectedToken={token} onTokenChange={setToken} />
             </div>
           )}
         </div>
       </div>
+
       <Button
         onClick={handlePreview}
-        disabled={!usdAmount || !tokenAmount}
-        className="w-full h-14 mt-2 bg-accent hover:bg-accent/90 text-white font-medium rounded-2xl text-base"
+        disabled={!usdAmount || !tokenAmount || loading}
+        className="w-full h-14 mt-6 bg-gradient-to-r from-accent-cyan to-primary-500 hover:from-accent-cyan/90 hover:to-primary-500/90 
+          text-white font-semibold rounded-xl shadow-lg hover:shadow-accent-cyan/25 transition-all duration-300 
+          disabled:from-gray-600/50 disabled:to-gray-700/50 disabled:cursor-not-allowed disabled:text-white/50
+          border border-white/[0.05] backdrop-blur-sm font-plus-jakarta text-base"
       >
-        {isUsdInput ? "Preview Purchase" : "Preview Sale"}
+        {loading ? (
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white" />
+        ) : (
+          isUsdInput ? "Preview Purchase" : "Preview Sale"
+        )}
       </Button>
 
       <SwapPreviewModal

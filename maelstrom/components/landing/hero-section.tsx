@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LiquidCanvas } from "@/components/ui/liquid-canvas";
-import { AnimatedCircularText } from "@/components/ui/animated-circular-text";
 import CircularText from "@/components/CircularText";
 import { ArrowRight, Play } from "lucide-react";
 import { WaveRippleCanvas } from "../ui/wave-ripple-canvas";
@@ -66,7 +64,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#001a47]">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#001233]">
       {/* Wave Ripple Effect */}
       <div className="absolute inset-0 z-10">
         <WaveRippleCanvas 
@@ -77,7 +75,7 @@ export function HeroSection() {
       </div>
 
       {/* Gradient Overlay - adjusted for dark blue background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#001a47]/10 via-[#001a47]/30 to-[#001a47]/70 pointer-events-none z-20" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#001233] via-[#001845]/10 to-[#001233]/70 pointer-events-none z-20" />
 
       {/* Visible Content */}
       <div className="relative container mx-auto px-4 text-center z-30">
@@ -113,14 +111,6 @@ export function HeroSection() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-accent/30 hover:border-accent bg-transparent"
-            >
-              <Play className="mr-2 h-4 w-4" />
-              Watch Demo
-            </Button>
           </div>
 
           {/* Trust Indicators - Below CTA buttons */}
@@ -140,15 +130,6 @@ export function HeroSection() {
           </div>
         </div>
       </div>
-
-      {/* Scroll Indicator
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-40">
-        <div className="animate-bounce">
-          <div className="w-6 h-10 border-2 border-accent/50 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-accent rounded-full mt-2 animate-pulse" />
-          </div>
-        </div>
-      </div> */}
     </section>
   );
 }

@@ -103,3 +103,63 @@ export function useTrade() {
 
   return { executeBuy, executeSell, executeSwap, loading, error }
 }
+
+interface DashboardData {
+  portfolioValue: string
+  totalLiquidity: string
+  activePools: number
+  estimatedApr: string
+}
+
+export function useMockData() {
+  const [data, setData] = useState<DashboardData>({
+    portfolioValue: "0.00",
+    totalLiquidity: "0.00",
+    activePools: 0,
+    estimatedApr: "0.00"
+  })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true)
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // Get pools to calculate statistics
+      const pools = await mockApi.getPools()
+      const activePools = pools.length
+      
+      // Calculate total liquidity across all pools
+      const totalLiquidity = pools.reduce((sum, pool) => {
+        const ethReserve = BigInt(pool.ethReserveWei)
+        return sum + ethReserve
+      }, BigInt(0))
+
+      // Calculate user portfolio value (mock for now)
+      const portfolioValue = totalLiquidity / BigInt(12) // Just an example fraction of total liquidity
+
+      // Calculate average APY from pool data
+      const avgApy = pools.reduce((sum, pool) => sum + pool.apy, 0) / pools.length
+
+      setData({
+        portfolioValue: (Number(portfolioValue) / 1e18).toFixed(2),
+        totalLiquidity: (Number(totalLiquidity) / 1e18).toFixed(2),
+        activePools,
+        estimatedApr: avgApy.toFixed(1)
+      })
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch dashboard data")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  return { ...data, loading, error, refetch: fetchDashboardData }
+}

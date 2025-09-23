@@ -1,13 +1,11 @@
 import { Header } from "@/components/header"
 import { SwapInterface } from "@/components/swap/swap-interface"
-import { SwapStats } from "@/components/swap/swap-stats"
-import { RecentSwaps } from "@/components/swap/recent-swaps"
 
 export default function SwapPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-pattern overflow-hidden">
       <Header />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative">
         <div className="max-w-6xl mx-auto">
           {/* Page Header */}
           <div className="text-center mb-8">

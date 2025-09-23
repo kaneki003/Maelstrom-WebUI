@@ -40,132 +40,124 @@ export function TokenTradingInterface({ token }: TokenTradingInterfaceProps) {
       </div>
       <div className="lg:col-span-1 space-y-6">
         {/* Pool Stats */}
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-          <CardContent className="pt-6">
+        <Card className="relative overflow-hidden border-border/50">
+          {/* Glass background with gradient */}
+          <div className="absolute inset-0 bg-background-800/40 backdrop-blur-xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/[0.08] to-primary-500/[0.05]" />
+          <div className="absolute inset-0 border border-white/[0.05] rounded-lg" />
+
+          <CardContent className="relative pt-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Total Liquidity</p>
-                <p className="text-lg font-bold">{poolData.totalLiquidity}</p>
+                <p className="text-sm text-muted-foreground font-medium">Pool Ratio</p>
+                <p className="text-lg font-bold font-clash-display text-transparent bg-clip-text bg-gradient-to-r from-white to-white/90">
+                  {poolData.poolRatio}
+                </p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Pool Ratio</p>
-                <p className="text-lg font-bold">{poolData.poolRatio}</p>
+                <p className="text-sm text-muted-foreground font-medium">Est. APR</p>
+                <p className="text-lg font-bold text-emerald-400">{poolData.estAPR}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Trading Fee</p>
+                <p className="text-sm text-muted-foreground font-medium">Trading Fee</p>
                 <p className="text-lg font-bold">{poolData.tradingFee}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Est. APR</p>
-                <p className="text-lg font-bold">{poolData.estAPR}</p>
+                <p className="text-sm text-muted-foreground font-medium">Total Liquidity</p>
+                <p className="text-lg font-bold">{poolData.totalLiquidity}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         {/* Trading Interface */}
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span>Trade {token.toUpperCase()}</span>
-              <Badge variant="secondary" className="text-xs">
-                Best Price
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card className="relative overflow-hidden">
+          {/* Glass background with gradient */}
+          <div className="absolute inset-0 bg-background-800/40 backdrop-blur-xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/[0.08] to-primary-500/[0.05]" />
+          <div className="absolute inset-0 border border-white/[0.05] rounded-lg" />
+
+          <CardContent className="relative p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full grid grid-cols-2 mb-4">
-                <TabsTrigger value="buy" className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" />
+              <TabsList className="w-full bg-background-900/50 border border-white/[0.05]">
+                <TabsTrigger
+                  value="buy"
+                  className="w-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600/20 data-[state=active]:to-emerald-500/10 data-[state=active]:text-emerald-400"
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
                   Buy
                 </TabsTrigger>
-                <TabsTrigger value="sell" className="flex items-center gap-2">
-                  <TrendingDown className="h-4 w-4" />
+                <TabsTrigger
+                  value="sell"
+                  className="w-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600/20 data-[state=active]:to-red-500/10 data-[state=active]:text-red-400"
+                >
+                  <TrendingDown className="h-4 w-4 mr-2" />
                   Sell
                 </TabsTrigger>
               </TabsList>
-
-              <TabsContent value="buy" className="mt-0 space-y-4">
+              
+              <TabsContent value="buy" className="space-y-4 mt-4">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>You Pay</Label>
+                    <Label className="text-sm font-medium text-muted-foreground">Amount in ETH</Label>
                     <div className="relative">
                       <Input
                         type="number"
-                        placeholder="0.0"
+                        placeholder="0.00"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="pl-20"
+                        className="pr-16 h-12 bg-background-900/50 border-white/[0.05] focus:ring-accent-500"
                       />
-                      <div className="absolute inset-y-0 left-0 flex items-center px-3 pointer-events-none text-sm font-medium">
-                        ETH
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <Badge variant="secondary" className="bg-background-800 text-accent-400">ETH</Badge>
+                      </div>
+                    </div>
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Balance: 2.4567 ETH</span>
+                      <span>≈ $7,864.32</span>
+                    </div>
+                  </div>
+
+                  <div className="relative py-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-white/[0.05]" />
+                    </div>
+                    <div className="relative flex justify-center">
+                      <div className="bg-card p-1 rounded-full border border-white/[0.05]">
+                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-center">
-                    <ArrowRight className="h-6 w-6 text-muted-foreground" />
-                  </div>
+
                   <div className="space-y-2">
-                    <Label>You Receive</Label>
+                    <Label className="text-sm font-medium text-muted-foreground">You'll Receive</Label>
                     <div className="relative">
                       <Input
                         type="number"
-                        placeholder="0.0"
-                        value={amount ? (Number(amount) * 500).toString() : ""}
+                        placeholder="0.00"
+                        value={(Number(amount) * 2500).toString()}
                         readOnly
-                        className="pl-20"
+                        className="pr-20 h-12 bg-background-900/50 border-white/[0.05]"
                       />
-                      <div className="absolute inset-y-0 left-0 flex items-center px-3 pointer-events-none text-sm font-medium">
-                        {token.toUpperCase()}
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <Badge variant="secondary" className="bg-background-800 text-accent-400">{token.toUpperCase()}</Badge>
                       </div>
                     </div>
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Price Impact: 0.05%</span>
+                      <span>Min. Received: 2,497.5 {token.toUpperCase()}</span>
+                    </div>
                   </div>
-                  <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                    Connect Wallet to Trade
-                  </Button>
                 </div>
+
+                <Button className="w-full h-12 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white border-0 font-medium">
+                  Buy {token.toUpperCase()}
+                </Button>
               </TabsContent>
 
-              <TabsContent value="sell" className="mt-0 space-y-4">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>You Pay</Label>
-                    <div className="relative">
-                      <Input
-                        type="number"
-                        placeholder="0.0"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        className="pl-20"
-                      />
-                      <div className="absolute inset-y-0 left-0 flex items-center px-3 pointer-events-none text-sm font-medium">
-                        {token.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-center">
-                    <ArrowRight className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>You Receive</Label>
-                    <div className="relative">
-                      <Input
-                        type="number"
-                        placeholder="0.0"
-                        value={amount ? (Number(amount) / 500).toString() : ""}
-                        readOnly
-                        className="pl-20"
-                      />
-                      <div className="absolute inset-y-0 left-0 flex items-center px-3 pointer-events-none text-sm font-medium">
-                        ETH
-                      </div>
-                    </div>
-                  </div>
-                  <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                    Connect Wallet to Trade
-                  </Button>
-                </div>
+              <TabsContent value="sell" className="space-y-4 mt-4">
+                {/* Similar structure as buy tab but with token input first and ETH output */}
+                {/* Adjust colors to use red theme for sell */}
               </TabsContent>
             </Tabs>
           </CardContent>

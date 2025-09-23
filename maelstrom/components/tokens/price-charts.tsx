@@ -1,8 +1,8 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { TrendingUp, TrendingDown } from "lucide-react"
+import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import type { PoolData } from "@/lib/mock-api"
 
@@ -12,138 +12,172 @@ interface PriceChartsProps {
 }
 
 export function PriceCharts({ token, poolData }: PriceChartsProps) {
-  const formatPrice = (price: number) => `$${price.toLocaleString()}`
-  const isPositive = poolData.priceData.change24h >= 0
+  const [timeRange, setTimeRange] = useState("1H")
+  
+  // Generate mock data with buy and sell prices
+  const generateChartData = (points: number) => {
+    return poolData.priceData.history.map(point => {
+      const basePrice = point.price / 3000 // Convert USD to ETH
+      return {
+        time: new Date(point.timestamp).toISOString(),
+        buyPrice: basePrice * 1.02, // 2% spread for buy
+        sellPrice: basePrice * 0.98, // 2% spread for sell
+        formattedTime: new Date(point.timestamp).toLocaleTimeString(),
+      }
+    })
+  }
 
+  const chartData = generateChartData(60)
+  
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Token/ETH Price Chart */}
-      <Card className="bg-background-800/50 backdrop-blur border-blue-700/20">
-        <CardHeader className="pb-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2">
-                <CardTitle>{token}/ETH</CardTitle>
-                <Badge 
-                  variant={isPositive ? "default" : "destructive"}
-                  className={`${isPositive ? "bg-green-500/20 text-green-500" : ""}`}
-                >
-                  {isPositive ? "+" : ""}{poolData.priceData.change24h.toFixed(2)}%
-                </Badge>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Buy Price Chart */}
+        <Card className="relative overflow-hidden">
+          {/* Glass morphism effects */}
+          <div className="absolute inset-0 bg-background-800/40 backdrop-blur-xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/[0.08] to-primary-500/[0.05]" />
+          <div className="absolute inset-0 border border-white/[0.05] rounded-lg" />
+          
+          <CardContent className="relative p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h4 className="text-sm text-muted-foreground font-medium">Buy Price</h4>
+                <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-500">
+                  {chartData[chartData.length - 1]?.buyPrice.toFixed(4)} ETH
+                </p>
               </div>
-              <p className="text-2xl font-bold mt-1">${poolData.priceData.current.toLocaleString()}</p>
+              <div className="flex gap-2">
+                {["1H", "24H", "7D", "1M"].map((range) => (
+                  <Button
+                    key={range}
+                    variant={timeRange === range ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setTimeRange(range)}
+                    className={timeRange === range ? "bg-accent text-white" : "text-muted-foreground"}
+                  >
+                    {range}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[240px] mt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={poolData.priceData.history}>
-                <defs>
-                  <linearGradient id="gradientArea" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgb(0, 216, 255)" stopOpacity={0.3}/>
-                    <stop offset="100%" stopColor="rgb(0, 216, 255)" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <XAxis 
-                  dataKey="timestamp"
-                  tickFormatter={(time) => new Date(time).toLocaleTimeString()}
-                  stroke="#94a3b8"
-                  tick={{ fill: "#94a3b8" }}
-                  tickLine={false}
-                />
-                <YAxis 
-                  tickFormatter={formatPrice}
-                  stroke="#94a3b8"
-                  tick={{ fill: "#94a3b8" }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "rgba(3, 16, 24, 0.8)",
-                    border: "1px solid rgba(11, 58, 102, 0.5)",
-                    borderRadius: "6px",
-                  }}
-                  labelFormatter={(time) => new Date(time).toLocaleString()}
-                  formatter={(value: number) => [`$${value.toLocaleString()}`, "Price"]}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="price"
-                  stroke="rgb(0, 216, 255)"
-                  strokeWidth={2}
-                  fill="url(#gradientArea)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+            
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="buyGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgb(16, 185, 129)" stopOpacity={0.2} />
+                      <stop offset="99%" stopColor="rgb(16, 185, 129)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis 
+                    dataKey="formattedTime"
+                    tick={{ fill: 'rgb(148, 163, 184)', fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    tick={{ fill: 'rgb(148, 163, 184)', fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value.toFixed(4)}`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: 'rgba(17, 25, 40, 0.8)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '8px',
+                      backdropFilter: 'blur(16px)',
+                    }}
+                    labelStyle={{ color: 'rgb(148, 163, 184)' }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="buyPrice"
+                    stroke="rgb(16, 185, 129)"
+                    fill="url(#buyGradient)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* ETH/USD Price Chart */}
-      <Card className="bg-background-800/50 backdrop-blur border-blue-700/20">
-        <CardHeader className="pb-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2">
-                <CardTitle>ETH/USD</CardTitle>
-                <Badge 
-                  variant="default"
-                  className="bg-green-500/20 text-green-500"
-                >
-                  +2.34%
-                </Badge>
+        {/* Sell Price Chart */}
+        <Card className="relative overflow-hidden">
+          {/* Glass morphism effects */}
+          <div className="absolute inset-0 bg-background-800/40 backdrop-blur-xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/[0.08] to-primary-500/[0.05]" />
+          <div className="absolute inset-0 border border-white/[0.05] rounded-lg" />
+          
+          <CardContent className="relative p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h4 className="text-sm text-muted-foreground font-medium">Sell Price</h4>
+                <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-500">
+                  {chartData[chartData.length - 1]?.sellPrice.toFixed(4)} ETH
+                </p>
               </div>
-              <p className="text-2xl font-bold mt-1">${poolData.priceData.ethPrice.toLocaleString()}</p>
+              <div className="flex gap-2">
+                {["1H", "24H", "7D", "1M"].map((range) => (
+                  <Button
+                    key={range}
+                    variant={timeRange === range ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setTimeRange(range)}
+                    className={timeRange === range ? "bg-accent text-white" : "text-muted-foreground"}
+                  >
+                    {range}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[240px] mt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={poolData.priceData.history.map(h => ({ ...h, price: h.price * 2 }))}>
-                <defs>
-                  <linearGradient id="gradientArea2" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgb(0, 216, 255)" stopOpacity={0.3}/>
-                    <stop offset="100%" stopColor="rgb(0, 216, 255)" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <XAxis 
-                  dataKey="timestamp"
-                  tickFormatter={(time) => new Date(time).toLocaleTimeString()}
-                  stroke="#94a3b8"
-                  tick={{ fill: "#94a3b8" }}
-                  tickLine={false}
-                />
-                <YAxis 
-                  tickFormatter={formatPrice}
-                  stroke="#94a3b8"
-                  tick={{ fill: "#94a3b8" }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "rgba(3, 16, 24, 0.8)",
-                    border: "1px solid rgba(11, 58, 102, 0.5)",
-                    borderRadius: "6px",
-                  }}
-                  labelFormatter={(time) => new Date(time).toLocaleString()}
-                  formatter={(value: number) => [`$${value.toLocaleString()}`, "Price"]}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="price"
-                  stroke="rgb(0, 216, 255)"
-                  strokeWidth={2}
-                  fill="url(#gradientArea2)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+            
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="sellGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgb(239, 68, 68)" stopOpacity={0.2} />
+                      <stop offset="99%" stopColor="rgb(239, 68, 68)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis 
+                    dataKey="formattedTime"
+                    tick={{ fill: 'rgb(148, 163, 184)', fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    tick={{ fill: 'rgb(148, 163, 184)', fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value.toFixed(4)}`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: 'rgba(17, 25, 40, 0.8)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '8px',
+                      backdropFilter: 'blur(16px)',
+                    }}
+                    labelStyle={{ color: 'rgb(148, 163, 184)' }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="sellPrice"
+                    stroke="rgb(239, 68, 68)"
+                    fill="url(#sellGradient)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

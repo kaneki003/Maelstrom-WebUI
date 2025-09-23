@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Waves, Shield, Zap, Users } from "lucide-react"
+import { RippleEffect } from "@/components/ui/ripple-effect"
 
 const valueProps = [
   {
@@ -43,9 +44,10 @@ export function ValuePropsSection() {
           {valueProps.map((prop, index) => (
             <Card
               key={prop.title}
-              className="group hover:shadow-medium transition-all duration-300 hover:-translate-y-2 border-border/50 bg-card/50 backdrop-blur-sm"
+              className="group hover:shadow-medium transition-all duration-300 hover:-translate-y-2 border-border/50 bg-card/50 backdrop-blur-sm relative overflow-hidden cursor-pointer"
             >
-              <CardContent className="p-6 text-center">
+              <RippleEffect color="rgba(124, 58, 237, 0.06)" />
+              <CardContent className="p-6 text-center relative">
                 <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors duration-300">
                   <prop.icon className="h-6 w-6 text-accent" />
                 </div>
