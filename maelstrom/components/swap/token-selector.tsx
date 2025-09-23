@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { Search, ChevronDown } from "lucide-react";
 
 export type ExchangeRates = {
-  eth: number;
   dai: number;
   usdc: number;
   wbtc: number;
@@ -30,17 +29,10 @@ interface Token {
 
 const tokens: Token[] = [
   {
-    symbol: "eth",
-    name: "Ethereum",
-    balance: "2.4567",
-    price: "$3,200",
-    change24h: 2.5,
-  },
-  {
     symbol: "dai",
     name: "Dai Stablecoin",
     balance: "1250.50",
-    price: "$1.00",
+    price: "0.0003125 ETH",
     change24h: 0.1,
   },
   {

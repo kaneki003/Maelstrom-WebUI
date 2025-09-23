@@ -3,7 +3,6 @@
 import { Header } from "@/components/header"
 import { DashboardOverview } from "@/components/dashboard/dashboard-overview"
 import { PoolsTable } from "@/components/dashboard/pools-table"
-import { PortfolioChart } from "@/components/dashboard/portfolio-chart"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
 
 export default function DashboardPage() {

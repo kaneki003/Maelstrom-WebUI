@@ -13,52 +13,51 @@ interface SellFormProps {
 }
 
 export function SellForm({ onExecute }: SellFormProps) {
-  const [usdAmount, setUsdAmount] = useState("")
-  const [token, setToken] = useState<keyof ExchangeRates>("eth")
+  const [ethAmount, setEthAmount] = useState("")
+  const [token, setToken] = useState<keyof ExchangeRates>("dai")
   const [tokenAmount, setTokenAmount] = useState("")
   const [showPreview, setShowPreview] = useState(false)
   const [priceImpact, setPriceImpact] = useState(0)
-  const [isUsdInput, setIsUsdInput] = useState(false)
+  const [isEthInput, setIsEthInput] = useState(false)
   const { executeSwap, loading } = useTrade()
   const { toast } = useToast()
 
-  // Mock exchange rates (use real rates in production)
+  // Mock exchange rates (in ETH terms)
   const exchangeRates: ExchangeRates = {
-    eth: 3200,
-    dai: 1,
-    usdc: 1,
-    wbtc: 67500,
+    dai: 0.0003125, // 1 DAI = 0.0003125 ETH (1 ETH = 3200 DAI)
+    usdc: 0.0003125, // 1 USDC = 0.0003125 ETH (1 ETH = 3200 USDC)
+    wbtc: 21.09375, // 1 WBTC = 21.09375 ETH (1 ETH = 0.047407 WBTC)
   }
 
-  const handleUsdAmountChange = (value: string) => {
-    setUsdAmount(value)
-    const amount = Number(value) / exchangeRates[token]
-    setTokenAmount(amount.toFixed(6))
-  }
-
-  const handleTokenAmountChange = (value: string) => {
-    setTokenAmount(value)
-    const amount = Number(value) * exchangeRates[token]
-    setUsdAmount(amount.toFixed(2))
-    // Calculate price impact (1% for every X tokens depending on the token)
-    const impactMultiplier = token === "wbtc" ? 0.1 : (token === "eth" ? 1 : 1000)
-    setPriceImpact(Math.min((Number(value) / impactMultiplier), 3))
+  const getImpactMultiplier = (tokenType: keyof ExchangeRates) => {
+    if (tokenType === "wbtc") return 0.1;
+    return 1000;
   }
 
   const handleInputChange = (value: string) => {
-    if (isUsdInput) {
-      handleUsdAmountChange(value)
+    if (!isEthInput) {
+      setTokenAmount(value)
+      // Convert token to ETH amount
+      const ethValue = Number(value) * exchangeRates[token]
+      setEthAmount(ethValue.toFixed(6))
+      // Calculate price impact
+      setPriceImpact(Math.min((Number(value) / getImpactMultiplier(token)), 3))
     } else {
-      handleTokenAmountChange(value)
+      setEthAmount(value)
+      // Convert ETH to token amount
+      const tokenValue = Number(value) / exchangeRates[token]
+      setTokenAmount(tokenValue.toFixed(token === "wbtc" ? 8 : 6))
+      // Calculate price impact based on ETH amount
+      setPriceImpact(Math.min(Number(value) * 10, 3))
     }
   }
 
   const handleSwapInputType = () => {
-    setIsUsdInput(!isUsdInput)
+    setIsEthInput(!isEthInput)
   }
 
   const handlePreview = () => {
-    if (!usdAmount || !tokenAmount) {
+    if (!ethAmount || !tokenAmount) {
       toast({
         title: "Invalid Amount",
         description: "Please enter an amount to sell",
@@ -71,33 +70,33 @@ export function SellForm({ onExecute }: SellFormProps) {
   const handleConfirmSell = async () => {
     let result;
     
-    if (isUsdInput) {
-      // If user is using USD as input, they're buying the token
-      result = await executeSwap("usdc", token, usdAmount);
+    if (isEthInput) {
+      // If user is using ETH as input, they're buying the token
+      result = await executeSwap("eth", token, ethAmount);
       
       if (result) {
         toast({
           title: "Purchase Successful!",
-          description: `Bought ${tokenAmount} ${token.toUpperCase()} for $${usdAmount}`,
+          description: `Bought ${tokenAmount} ${token.toUpperCase()} for ${ethAmount} ETH`,
         });
       }
     } else {
       // If user is using token as input, they're selling the token
-      result = await executeSwap(token, "usdc", tokenAmount);
+      result = await executeSwap(token, "eth", tokenAmount);
       
       if (result) {
         toast({
           title: "Sale Successful!",
-          description: `Sold ${tokenAmount} ${token.toUpperCase()} for $${usdAmount}`,
+          description: `Sold ${tokenAmount} ${token.toUpperCase()} for ${ethAmount} ETH`,
         });
       }
     }
     
     if (result) {
-      setUsdAmount("");
+      setEthAmount("");
       setTokenAmount("");
       setShowPreview(false);
-      onExecute(isUsdInput ? usdAmount : tokenAmount, token);
+      onExecute(isEthInput ? ethAmount : tokenAmount, token);
     }
   }
 
@@ -106,7 +105,7 @@ export function SellForm({ onExecute }: SellFormProps) {
       <div className="relative bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 rounded-2xl p-5 border border-white/[0.05] shadow-lg backdrop-blur-md group">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm text-white/70 font-medium font-plus-jakarta">
-            {isUsdInput ? "You'll receive" : "You're selling"}
+            You're {isEthInput ? "receiving" : "selling"}
           </span>
           <button
             onClick={handleSwapInputType}
@@ -116,21 +115,46 @@ export function SellForm({ onExecute }: SellFormProps) {
           </button>
         </div>
         <div className="relative flex items-center bg-black/10 group-hover:bg-black/20 rounded-xl p-4 transition-all duration-300">
-          {isUsdInput && <span className="text-4xl font-medium mr-2 font-plus-jakarta text-white/90">$</span>}
-          <input
-            type="text"
-            inputMode="decimal"
-            placeholder="0"
-            value={isUsdInput ? usdAmount : tokenAmount}
-            onChange={(e) => handleInputChange(e.target.value)}
-            className="w-full bg-transparent text-4xl font-medium outline-none placeholder:text-white/20 
-              [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
-              font-plus-jakarta text-white/90 transition-all duration-300"
-          />
-          {!isUsdInput && (
-            <div className="ml-2">
-              <TokenSelector selectedToken={token} onTokenChange={setToken} />
-            </div>
+          {isEthInput ? (
+            <>
+              <input
+                type="text"
+                inputMode="decimal"
+                placeholder="0"
+                value={ethAmount}
+                onChange={(e) => handleInputChange(e.target.value)}
+                className="w-full bg-transparent text-4xl font-medium outline-none placeholder:text-white/20 
+                  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+                  font-plus-jakarta text-white/90 transition-all duration-300"
+              />
+              <Button
+                variant="ghost"
+                className="h-10 px-3 hover:bg-accent/10 font-medium ml-2"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
+                    <span className="text-sm font-bold text-accent">E</span>
+                  </div>
+                  <span className="text-base">ETH</span>
+                </div>
+              </Button>
+            </>
+          ) : (
+            <>
+              <input
+                type="text"
+                inputMode="decimal"
+                placeholder="0"
+                value={tokenAmount}
+                onChange={(e) => handleInputChange(e.target.value)}
+                className="w-full bg-transparent text-4xl font-medium outline-none placeholder:text-white/20 
+                  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+                  font-plus-jakarta text-white/90 transition-all duration-300"
+              />
+              <div className="ml-2">
+                <TokenSelector selectedToken={token} onTokenChange={setToken} />
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -138,25 +162,43 @@ export function SellForm({ onExecute }: SellFormProps) {
       <div className="relative bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 rounded-2xl p-5 border border-white/[0.05] shadow-lg backdrop-blur-md group">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm text-white/70 font-medium font-plus-jakarta">
-            {isUsdInput ? "You're selling" : "You'll receive"}
+            You're {isEthInput ? "selling" : "receiving"}
           </span>
         </div>
         <div className="relative flex items-center bg-black/10 group-hover:bg-black/20 rounded-xl p-4 transition-all duration-300">
-          {!isUsdInput && <span className="text-4xl font-medium mr-2 font-plus-jakarta text-white/90">$</span>}
-          <div className="text-4xl font-medium w-full font-plus-jakarta text-white/90">
-            {isUsdInput ? tokenAmount || "0" : usdAmount || "0"}
-          </div>
-          {isUsdInput && (
-            <div className="ml-2">
-              <TokenSelector selectedToken={token} onTokenChange={setToken} />
-            </div>
+          {isEthInput ? (
+            <>
+              <div className="text-4xl font-medium w-full font-plus-jakarta text-white/90">
+                {tokenAmount || "0"}
+              </div>
+              <div className="ml-2">
+                <TokenSelector selectedToken={token} onTokenChange={setToken} />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-4xl font-medium w-full font-plus-jakarta text-white/90">
+                {ethAmount || "0"}
+              </div>
+              <Button
+                variant="ghost"
+                className="h-10 px-3 hover:bg-accent/10 font-medium ml-2"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
+                    <span className="text-sm font-bold text-accent">E</span>
+                  </div>
+                  <span className="text-base">ETH</span>
+                </div>
+              </Button>
+            </>
           )}
         </div>
       </div>
 
       <Button
         onClick={handlePreview}
-        disabled={!usdAmount || !tokenAmount || loading}
+        disabled={!ethAmount || !tokenAmount || loading}
         className="w-full h-14 mt-6 bg-gradient-to-r from-accent-cyan to-primary-500 hover:from-accent-cyan/90 hover:to-primary-500/90 
           text-white font-semibold rounded-xl shadow-lg hover:shadow-accent-cyan/25 transition-all duration-300 
           disabled:from-gray-600/50 disabled:to-gray-700/50 disabled:cursor-not-allowed disabled:text-white/50
@@ -165,7 +207,7 @@ export function SellForm({ onExecute }: SellFormProps) {
         {loading ? (
           <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white" />
         ) : (
-          isUsdInput ? "Preview Purchase" : "Review Sell Order"
+          `Preview Sell`
         )}
       </Button>
 
@@ -173,10 +215,10 @@ export function SellForm({ onExecute }: SellFormProps) {
         isOpen={showPreview}
         onClose={() => setShowPreview(false)}
         onConfirm={handleConfirmSell}
-        tokenA={isUsdInput ? "usdc" : token}
-        tokenB={isUsdInput ? token : "usdc"}
-        amountA={isUsdInput ? usdAmount : tokenAmount}
-        amountB={isUsdInput ? tokenAmount : usdAmount}
+        tokenA={isEthInput ? "eth" : token}
+        tokenB={isEthInput ? token : "eth"}
+        amountA={isEthInput ? ethAmount : tokenAmount}
+        amountB={isEthInput ? tokenAmount : ethAmount}
         priceImpact={priceImpact}
         loading={loading}
       />
