@@ -47,16 +47,6 @@ export function BuyForm({ onExecute }: BuyFormProps) {
     }
   };
 
-  const handleQuickAmount = (amount: number) => {
-    if (!isEthInput) {
-      handleInputChange(amount.toString());
-    } else {
-      // If ETH input, convert to token equivalent
-      const tokenValue = amount / exchangeRates[token];
-      handleInputChange(tokenValue.toFixed(6));
-    }
-  };
-
   const handleSwapInputType = () => {
     setIsEthInput(!isEthInput);
   };
@@ -158,9 +148,16 @@ export function BuyForm({ onExecute }: BuyFormProps) {
           </span>
         </div>
         <div className="relative flex items-center bg-black/10 group-hover:bg-black/20 rounded-xl p-4 transition-all duration-300">
-          <div className="text-4xl font-medium w-full font-plus-jakarta text-white/90">
-            {isEthInput ? tokenAmount || "0" : ethAmount || "0"}
-          </div>
+              <input
+              type="text"
+              inputMode="decimal"
+              placeholder="0"
+              value={isEthInput ? tokenAmount : ethAmount}
+              readOnly
+              className="w-full bg-transparent text-4xl font-medium outline-none placeholder:text-white/20 
+                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+                font-plus-jakarta text-white/90 transition-all duration-300"
+              />
           {isEthInput && (
             <div className="ml-2">
               <TokenSelector selectedToken={token} onTokenChange={setToken} />

@@ -1,7 +1,7 @@
 export interface PoolMock {
-  slug: string;            // token slug (e.g. 'euclid')
-  symbol: string;          // 'EUCLID'
-  name: string;           // 'Euclid'
+  slug: string;            
+  symbol: string;         
+  name: string;           
   logoUrl?: string;
   priceUSD: number;
   priceChange24hPct: number;

@@ -28,21 +28,16 @@ export default function TokensPage() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--accent-cyan)/5%,transparent_50%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--primary-500)/5%,transparent_50%)]" />
             <div className="absolute inset-0 border border-white/[0.05] rounded-3xl bg-gradient-to-b from-white/[0.05] to-transparent" />
-            
+{/*             
             <CardHeader className="border-b border-white/[0.05] relative backdrop-blur-sm">
               <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-500">
-                    All Pools
-                  </h2>
-                </div>
                 <TokenSearchBar 
                   onSearch={setSearch}
                   onFilterChange={setFilter}
                   onAutoRefreshToggle={setAutoRefresh}
                 />
               </CardTitle>
-            </CardHeader>
+            </CardHeader> */}
             <CardContent className="mt-4">
               <TokenList />
             </CardContent>

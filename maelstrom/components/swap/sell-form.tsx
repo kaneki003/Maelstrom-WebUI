@@ -1,60 +1,60 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { TokenSelector, ExchangeRates } from "./token-selector"
-import { SwapPreviewModal } from "@/components/swap/swap-preview-modal"
-import { useTrade } from "@/hooks/use-mock-api"
-import { useToast } from "@/hooks/use-toast"
-import { ArrowDownUp } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { TokenSelector, ExchangeRates } from "./token-selector";
+import { SwapPreviewModal } from "@/components/swap/swap-preview-modal";
+import { useTrade } from "@/hooks/use-mock-api";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowDownUp } from "lucide-react";
 
 interface SellFormProps {
-  onExecute: (amount: string, token: string) => void
+  onExecute: (amount: string, token: string) => void;
 }
 
 export function SellForm({ onExecute }: SellFormProps) {
-  const [ethAmount, setEthAmount] = useState("")
-  const [token, setToken] = useState<keyof ExchangeRates>("dai")
-  const [tokenAmount, setTokenAmount] = useState("")
-  const [showPreview, setShowPreview] = useState(false)
-  const [priceImpact, setPriceImpact] = useState(0)
-  const [isEthInput, setIsEthInput] = useState(false)
-  const { executeSwap, loading } = useTrade()
-  const { toast } = useToast()
+  const [ethAmount, setEthAmount] = useState("");
+  const [token, setToken] = useState<keyof ExchangeRates>("dai");
+  const [tokenAmount, setTokenAmount] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+  const [priceImpact, setPriceImpact] = useState(0);
+  const [isEthInput, setIsEthInput] = useState(false);
+  const { executeSwap, loading } = useTrade();
+  const { toast } = useToast();
 
   // Mock exchange rates (in ETH terms)
   const exchangeRates: ExchangeRates = {
     dai: 0.0003125, // 1 DAI = 0.0003125 ETH (1 ETH = 3200 DAI)
     usdc: 0.0003125, // 1 USDC = 0.0003125 ETH (1 ETH = 3200 USDC)
     wbtc: 21.09375, // 1 WBTC = 21.09375 ETH (1 ETH = 0.047407 WBTC)
-  }
+  };
 
   const getImpactMultiplier = (tokenType: keyof ExchangeRates) => {
     if (tokenType === "wbtc") return 0.1;
     return 1000;
-  }
+  };
 
   const handleInputChange = (value: string) => {
     if (!isEthInput) {
-      setTokenAmount(value)
+      setTokenAmount(value);
       // Convert token to ETH amount
-      const ethValue = Number(value) * exchangeRates[token]
-      setEthAmount(ethValue.toFixed(6))
+      const ethValue = Number(value) * exchangeRates[token];
+      setEthAmount(ethValue.toFixed(6));
       // Calculate price impact
-      setPriceImpact(Math.min((Number(value) / getImpactMultiplier(token)), 3))
+      setPriceImpact(Math.min(Number(value) / getImpactMultiplier(token), 3));
     } else {
-      setEthAmount(value)
+      setEthAmount(value);
       // Convert ETH to token amount
-      const tokenValue = Number(value) / exchangeRates[token]
-      setTokenAmount(tokenValue.toFixed(token === "wbtc" ? 8 : 6))
+      const tokenValue = Number(value) / exchangeRates[token];
+      setTokenAmount(tokenValue.toFixed(token === "wbtc" ? 8 : 6));
       // Calculate price impact based on ETH amount
-      setPriceImpact(Math.min(Number(value) * 10, 3))
+      setPriceImpact(Math.min(Number(value) * 10, 3));
     }
-  }
+  };
 
   const handleSwapInputType = () => {
-    setIsEthInput(!isEthInput)
-  }
+    setIsEthInput(!isEthInput);
+  };
 
   const handlePreview = () => {
     if (!ethAmount || !tokenAmount) {
@@ -65,15 +65,15 @@ export function SellForm({ onExecute }: SellFormProps) {
       return;
     }
     setShowPreview(true);
-  }
+  };
 
   const handleConfirmSell = async () => {
     let result;
-    
+
     if (isEthInput) {
       // If user is using ETH as input, they're buying the token
       result = await executeSwap("eth", token, ethAmount);
-      
+
       if (result) {
         toast({
           title: "Purchase Successful!",
@@ -83,7 +83,7 @@ export function SellForm({ onExecute }: SellFormProps) {
     } else {
       // If user is using token as input, they're selling the token
       result = await executeSwap(token, "eth", tokenAmount);
-      
+
       if (result) {
         toast({
           title: "Sale Successful!",
@@ -91,14 +91,14 @@ export function SellForm({ onExecute }: SellFormProps) {
         });
       }
     }
-    
+
     if (result) {
       setEthAmount("");
       setTokenAmount("");
       setShowPreview(false);
       onExecute(isEthInput ? ethAmount : tokenAmount, token);
     }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -162,24 +162,38 @@ export function SellForm({ onExecute }: SellFormProps) {
       <div className="relative bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 rounded-2xl p-5 border border-white/[0.05] shadow-lg backdrop-blur-md group">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm text-white/70 font-medium font-plus-jakarta">
-            You're {isEthInput ? "selling" : "receiving"}
+            You'll {isEthInput ? "sell" : "receive"}
           </span>
         </div>
         <div className="relative flex items-center bg-black/10 group-hover:bg-black/20 rounded-xl p-4 transition-all duration-300">
           {isEthInput ? (
             <>
-              <div className="text-4xl font-medium w-full font-plus-jakarta text-white/90">
-                {tokenAmount || "0"}
-              </div>
+              <input
+                type="text"
+                inputMode="decimal"
+                placeholder="0"
+                value={tokenAmount}
+                readOnly
+                className="w-full bg-transparent text-4xl font-medium outline-none placeholder:text-white/20 
+                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+                font-plus-jakarta text-white/90 transition-all duration-300"
+              />
               <div className="ml-2">
                 <TokenSelector selectedToken={token} onTokenChange={setToken} />
               </div>
             </>
           ) : (
             <>
-              <div className="text-4xl font-medium w-full font-plus-jakarta text-white/90">
-                {ethAmount || "0"}
-              </div>
+              <input
+                type="text"
+                inputMode="decimal"
+                placeholder="0"
+                value={ethAmount}
+                readOnly
+                className="w-full bg-transparent text-4xl font-medium outline-none placeholder:text-white/20 
+                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+                font-plus-jakarta text-white/90 transition-all duration-300"
+              />
               <Button
                 variant="ghost"
                 className="h-10 px-3 hover:bg-accent/10 font-medium ml-2"
