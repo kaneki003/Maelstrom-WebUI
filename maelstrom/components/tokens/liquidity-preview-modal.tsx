@@ -9,12 +9,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Clock, AlertTriangle, Zap } from "lucide-react";
+import { ETH, Token } from "@/lib/mock-api";
 
 interface LiquidityPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  tokenSymbol: string;
+  token: Token | ETH
   isWithdraw: boolean;
   tokenAmount: string;
   ethAmount: string;
@@ -26,7 +27,7 @@ export function LiquidityPreviewModal({
   isOpen,
   onClose,
   onConfirm,
-  tokenSymbol,
+  token,
   isWithdraw,
   tokenAmount,
   ethAmount,
@@ -58,7 +59,7 @@ export function LiquidityPreviewModal({
                   ) : (
                     <div className="space-y-1">
                       <p className="text-lg font-semibold text-white/90 font-plus-jakarta">
-                        {tokenAmount} {tokenSymbol}
+                        {tokenAmount} {token.symbol.toUpperCase()}
                       </p>
                       <p className="text-lg font-semibold text-white/90 font-plus-jakarta">
                         {ethAmount} ETH
@@ -77,7 +78,7 @@ export function LiquidityPreviewModal({
                   {isWithdraw ? (
                     <div className="space-y-1">
                       <p className="text-lg font-semibold text-white/90 font-plus-jakarta">
-                        {tokenAmount} {tokenSymbol}
+                        {tokenAmount} {token.symbol.toUpperCase()}
                       </p>
                       <p className="text-lg font-semibold text-white/90 font-plus-jakarta">
                         {ethAmount} ETH

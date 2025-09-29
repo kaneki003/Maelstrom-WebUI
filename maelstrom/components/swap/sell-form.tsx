@@ -7,48 +7,45 @@ import { SwapPreviewModal } from "@/components/swap/swap-preview-modal";
 import { useTrade } from "@/hooks/use-mock-api";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowDownUp } from "lucide-react";
+import {
+  BuyRequest,
+  DAI_MOCK,
+  ETH_MOCK,
+  SellResult,
+  Token,
+} from "@/lib/mock-api";
 
-interface SellFormProps {
-  onExecute: (amount: string, token: string) => void;
-}
-
-export function SellForm({ onExecute }: SellFormProps) {
+export function SellForm() {
   const [ethAmount, setEthAmount] = useState("");
-  const [token, setToken] = useState<keyof ExchangeRates>("dai");
+  const [token, setToken] = useState<Token>(DAI_MOCK);
   const [tokenAmount, setTokenAmount] = useState("");
   const [showPreview, setShowPreview] = useState(false);
-  const [priceImpact, setPriceImpact] = useState(0);
   const [isEthInput, setIsEthInput] = useState(false);
-  const { executeSwap, loading } = useTrade();
+  const { executeSell, loading } = useTrade();
   const { toast } = useToast();
 
-  // Mock exchange rates (in ETH terms)
   const exchangeRates: ExchangeRates = {
-    dai: 0.0003125, // 1 DAI = 0.0003125 ETH (1 ETH = 3200 DAI)
-    usdc: 0.0003125, // 1 USDC = 0.0003125 ETH (1 ETH = 3200 USDC)
-    wbtc: 21.09375, // 1 WBTC = 21.09375 ETH (1 ETH = 0.047407 WBTC)
-  };
-
-  const getImpactMultiplier = (tokenType: keyof ExchangeRates) => {
-    if (tokenType === "wbtc") return 0.1;
-    return 1000;
+    dai: 0.0003125,
+    usdc: 0.0003125,
+    wbtc: 21.09375,
   };
 
   const handleInputChange = (value: string) => {
+    if (!token) return;
     if (!isEthInput) {
       setTokenAmount(value);
-      // Convert token to ETH amount
-      const ethValue = Number(value) * exchangeRates[token];
+      const ethValue =
+        Number(value) *
+        exchangeRates[token.symbol.toLowerCase() as keyof ExchangeRates];
       setEthAmount(ethValue.toFixed(6));
-      // Calculate price impact
-      setPriceImpact(Math.min(Number(value) / getImpactMultiplier(token), 3));
     } else {
       setEthAmount(value);
-      // Convert ETH to token amount
-      const tokenValue = Number(value) / exchangeRates[token];
-      setTokenAmount(tokenValue.toFixed(token === "wbtc" ? 8 : 6));
-      // Calculate price impact based on ETH amount
-      setPriceImpact(Math.min(Number(value) * 10, 3));
+      const tokenValue =
+        Number(value) /
+        exchangeRates[token.symbol.toLowerCase() as keyof ExchangeRates];
+      setTokenAmount(
+        tokenValue.toFixed(token.symbol.toLowerCase() === "wbtc" ? 8 : 6)
+      );
     }
   };
 
@@ -68,35 +65,28 @@ export function SellForm({ onExecute }: SellFormProps) {
   };
 
   const handleConfirmSell = async () => {
-    let result;
+    if (!token) return;
+    const buyRequest: BuyRequest = {
+      token: token,
+      amountIn: tokenAmount,
+    };
 
-    if (isEthInput) {
-      // If user is using ETH as input, they're buying the token
-      result = await executeSwap("eth", token, ethAmount);
-
-      if (result) {
-        toast({
-          title: "Purchase Successful!",
-          description: `Bought ${tokenAmount} ${token.toUpperCase()} for ${ethAmount} ETH`,
-        });
-      }
+    const result: SellResult = await executeSell(buyRequest);
+    if (result.success) {
+      toast({
+        title: "Sell Successful!",
+        description: `Tx Hash ${result.txHash}`,
+      });
     } else {
-      // If user is using token as input, they're selling the token
-      result = await executeSwap(token, "eth", tokenAmount);
-
-      if (result) {
-        toast({
-          title: "Sale Successful!",
-          description: `Sold ${tokenAmount} ${token.toUpperCase()} for ${ethAmount} ETH`,
-        });
-      }
+      toast({
+        title: "Sell Failed",
+        description: `Error: ${result.error}`,
+      });
     }
-
     if (result) {
       setEthAmount("");
       setTokenAmount("");
       setShowPreview(false);
-      onExecute(isEthInput ? ethAmount : tokenAmount, token);
     }
   };
 
@@ -152,7 +142,10 @@ export function SellForm({ onExecute }: SellFormProps) {
                   font-plus-jakarta text-white/90 transition-all duration-300"
               />
               <div className="ml-2">
-                <TokenSelector selectedToken={token} onTokenChange={setToken} />
+                <TokenSelector
+                  selectedToken={token ? token : DAI_MOCK}
+                  onTokenChange={setToken}
+                />
               </div>
             </>
           )}
@@ -179,7 +172,10 @@ export function SellForm({ onExecute }: SellFormProps) {
                 font-plus-jakarta text-white/90 transition-all duration-300"
               />
               <div className="ml-2">
-                <TokenSelector selectedToken={token} onTokenChange={setToken} />
+                <TokenSelector
+                  selectedToken={token ? token : DAI_MOCK}
+                  onTokenChange={setToken}
+                />
               </div>
             </>
           ) : (
@@ -229,11 +225,10 @@ export function SellForm({ onExecute }: SellFormProps) {
         isOpen={showPreview}
         onClose={() => setShowPreview(false)}
         onConfirm={handleConfirmSell}
-        tokenA={isEthInput ? "eth" : token}
-        tokenB={isEthInput ? token : "eth"}
-        amountA={isEthInput ? ethAmount : tokenAmount}
-        amountB={isEthInput ? tokenAmount : ethAmount}
-        priceImpact={priceImpact}
+        tokenIn={token!}
+        tokenOut={ETH_MOCK}
+        amountIn={tokenAmount}
+        amountOut={ethAmount}
         loading={loading}
       />
     </div>

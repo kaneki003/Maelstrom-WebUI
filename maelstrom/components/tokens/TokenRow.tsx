@@ -1,11 +1,10 @@
 "use client"
 
-import { SmallSparkline } from "@/components/SmallSparkline"
+import { SmallSparkline } from "@/components/ui/SmallSparkline"
 import type { PoolMock } from "@/types/pool"
 import { formatCurrency, formatPercentage } from "@/types/pool"
 import { ChevronRight } from "lucide-react"
 import Link from "next/link"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface TokenRowProps {
   token: PoolMock;
@@ -19,13 +18,11 @@ export function TokenRow({ token }: TokenRowProps) {
     logoUrl,
     priceUSD,
     liquidityUSD,
-    lastExchangeTs,
   } = token
 
   // Calculate ETH prices based on USD price (assuming 1 ETH = $3000 for this example)
   const ETH_PRICE_USD = 3000
   const buyPriceETH = (priceUSD / ETH_PRICE_USD) * 1.02 // Adding 2% spread for buy price
-  const sellPriceETH = (priceUSD / ETH_PRICE_USD) * 0.98 // Subtracting 2% spread for sell price
   const liquidityETH = liquidityUSD / ETH_PRICE_USD
   
   // Format timestamp to show only the highest unit

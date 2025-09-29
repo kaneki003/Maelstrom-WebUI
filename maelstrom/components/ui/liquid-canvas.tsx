@@ -1,44 +1,54 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
 interface LiquidCanvasProps {
-  mousePosition: { x: number; y: number }
-  className?: string
+  mousePosition: { x: number; y: number };
+  className?: string;
 }
 
-export function LiquidCanvas({ mousePosition, className = "" }: LiquidCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
-  const [isWebGLSupported, setIsWebGLSupported] = useState(true)
-  const [gl, setGl] = useState<WebGLRenderingContext | null>(null)
-  const [program, setProgram] = useState<WebGLProgram | null>(null)
-  const [positionBuffer, setPositionBuffer] = useState<WebGLBuffer | null>(null)
-  const [positionLocation, setPositionLocation] = useState<number>(-1)
-  const [timeLocation, setTimeLocation] = useState<WebGLUniformLocation | null>(null)
-  const [resolutionLocation, setResolutionLocation] = useState<WebGLUniformLocation | null>(null)
-  const [mouseLocation, setMouseLocation] = useState<WebGLUniformLocation | null>(null)
-  const [startTime, setStartTime] = useState<number>(Date.now())
+export function LiquidCanvas({
+  mousePosition,
+  className = "",
+}: LiquidCanvasProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const [isWebGLSupported, setIsWebGLSupported] = useState(true);
+  const [gl, setGl] = useState<WebGLRenderingContext | null>(null);
+  const [program, setProgram] = useState<WebGLProgram | null>(null);
+  const [positionBuffer, setPositionBuffer] = useState<WebGLBuffer | null>(
+    null
+  );
+  const [positionLocation, setPositionLocation] = useState<number>(-1);
+  const [timeLocation, setTimeLocation] = useState<WebGLUniformLocation | null>(
+    null
+  );
+  const [resolutionLocation, setResolutionLocation] =
+    useState<WebGLUniformLocation | null>(null);
+  const [mouseLocation, setMouseLocation] =
+    useState<WebGLUniformLocation | null>(null);
+  const startTime = useRef<number>(Date.now());
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
     // Check WebGL support
-    const glContext = canvas.getContext("webgl") || canvas.getContext("experimental-webgl")
+    const glContext = (canvas.getContext("webgl") ||
+      canvas.getContext("experimental-webgl")) as WebGLRenderingContext | null;
     if (!glContext) {
-      setIsWebGLSupported(false)
-      return
+      setIsWebGLSupported(false);
+      return;
     }
-    setGl(glContext)
+    setGl(glContext);
 
     // Set canvas size
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-    resizeCanvas()
-    window.addEventListener("resize", resizeCanvas)
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     // Simple WebGL liquid effect
     const vertexShaderSource = `
@@ -46,7 +56,7 @@ export function LiquidCanvas({ mousePosition, className = "" }: LiquidCanvasProp
       void main() {
         gl_Position = vec4(a_position, 0.0, 1.0);
       }
-    `
+    `;
 
     const fragmentShaderSource = `
       precision mediump float;
@@ -80,49 +90,74 @@ export function LiquidCanvas({ mousePosition, className = "" }: LiquidCanvasProp
         
         gl_FragColor = vec4(finalColor, 0.8);
       }
-    `
+    `;
 
     // Create shader program
-    const createShader = (gl: WebGLRenderingContext, type: number, source: string) => {
-      const shader = gl.createShader(type)
-      if (!shader) return null
-      gl.shaderSource(shader, source)
-      gl.compileShader(shader)
-      return shader
-    }
+    const createShader = (
+      gl: WebGLRenderingContext,
+      type: number,
+      source: string
+    ) => {
+      const shader = gl.createShader(type);
+      if (!shader) return null;
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      return shader;
+    };
 
-    const vertexShader = createShader(glContext, glContext.VERTEX_SHADER, vertexShaderSource)
-    const fragmentShader = createShader(glContext, glContext.FRAGMENT_SHADER, fragmentShaderSource)
+    const vertexShader = createShader(
+      glContext,
+      glContext.VERTEX_SHADER,
+      vertexShaderSource
+    );
+    const fragmentShader = createShader(
+      glContext,
+      glContext.FRAGMENT_SHADER,
+      fragmentShaderSource
+    );
 
-    if (!vertexShader || !fragmentShader) return
+    if (!vertexShader || !fragmentShader) return;
 
-    const shaderProgram = glContext.createProgram()
-    if (!shaderProgram) return
+    const shaderProgram = glContext.createProgram();
+    if (!shaderProgram) return;
 
-    glContext.attachShader(shaderProgram, vertexShader)
-    glContext.attachShader(shaderProgram, fragmentShader)
-    glContext.linkProgram(shaderProgram)
-    setProgram(shaderProgram)
+    glContext.attachShader(shaderProgram, vertexShader);
+    glContext.attachShader(shaderProgram, fragmentShader);
+    glContext.linkProgram(shaderProgram);
+    setProgram(shaderProgram);
 
     // Set up geometry
-    const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1])
-    const positionBuffer = glContext.createBuffer()
-    glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer)
-    glContext.bufferData(glContext.ARRAY_BUFFER, positions, glContext.STATIC_DRAW)
-    setPositionBuffer(positionBuffer)
+    const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+    const positionBuffer = glContext.createBuffer();
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
+    glContext.bufferData(
+      glContext.ARRAY_BUFFER,
+      positions,
+      glContext.STATIC_DRAW
+    );
+    setPositionBuffer(positionBuffer);
 
-    const positionLocation = glContext.getAttribLocation(shaderProgram, "a_position")
-    setPositionLocation(positionLocation)
+    const positionLocation = glContext.getAttribLocation(
+      shaderProgram,
+      "a_position"
+    );
+    setPositionLocation(positionLocation);
 
-    const timeLocation = glContext.getUniformLocation(shaderProgram, "u_time")
-    setTimeLocation(timeLocation)
+    const timeLocation = glContext.getUniformLocation(shaderProgram, "u_time");
+    setTimeLocation(timeLocation);
 
-    const resolutionLocation = glContext.getUniformLocation(shaderProgram, "u_resolution")
-    setResolutionLocation(resolutionLocation)
+    const resolutionLocation = glContext.getUniformLocation(
+      shaderProgram,
+      "u_resolution"
+    );
+    setResolutionLocation(resolutionLocation);
 
-    const mouseLocation = glContext.getUniformLocation(shaderProgram, "u_mouse")
-    setMouseLocation(mouseLocation)
-  }, [mousePosition])
+    const mouseLocation = glContext.getUniformLocation(
+      shaderProgram,
+      "u_mouse"
+    );
+    setMouseLocation(mouseLocation);
+  }, [mousePosition]);
 
   useEffect(() => {
     if (
@@ -134,36 +169,40 @@ export function LiquidCanvas({ mousePosition, className = "" }: LiquidCanvasProp
       !resolutionLocation ||
       !mouseLocation
     )
-      return
+      return;
 
     const render = () => {
-      const currentTime = (Date.now() - startTime) / 1000
+      const currentTime = (Date.now() - startTime.current) / 1000;
 
-      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+      gl.clear(gl.COLOR_BUFFER_BIT);
 
-      gl.useProgram(program)
+      gl.useProgram(program);
 
-      gl.enableVertexAttribArray(positionLocation)
-      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
+      gl.enableVertexAttribArray(positionLocation);
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-      gl.uniform1f(timeLocation, currentTime)
-      gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height)
-      gl.uniform2f(mouseLocation, mousePosition.x, gl.canvas.height - mousePosition.y)
+      gl.uniform1f(timeLocation, currentTime);
+      gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+      gl.uniform2f(
+        mouseLocation,
+        mousePosition.x,
+        gl.canvas.height - mousePosition.y
+      );
 
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-      animationRef.current = requestAnimationFrame(render)
-    }
+      animationRef.current = requestAnimationFrame(render);
+    };
 
-    render()
+    render();
 
     return () => {
       if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
+        cancelAnimationFrame(animationRef.current);
       }
-    }
+    };
   }, [
     gl,
     program,
@@ -174,13 +213,17 @@ export function LiquidCanvas({ mousePosition, className = "" }: LiquidCanvasProp
     mouseLocation,
     startTime,
     mousePosition,
-  ])
+  ]);
 
   // Fallback SVG animation for non-WebGL browsers
   if (!isWebGLSupported) {
     return (
       <div className={`absolute inset-0 ${className}`}>
-        <svg className="w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 1000 1000"
+          preserveAspectRatio="xMidYMid slice"
+        >
           <defs>
             <radialGradient id="liquidGradient" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="rgba(0, 216, 255, 0.3)" />
@@ -206,7 +249,13 @@ export function LiquidCanvas({ mousePosition, className = "" }: LiquidCanvasProp
             filter="url(#glow)"
             className="animate-pulse"
           />
-          <circle cx="300" cy="300" r="100" fill="rgba(43, 211, 255, 0.1)" className="animate-float" />
+          <circle
+            cx="300"
+            cy="300"
+            r="100"
+            fill="rgba(43, 211, 255, 0.1)"
+            className="animate-float"
+          />
           <circle
             cx="700"
             cy="700"
@@ -217,8 +266,8 @@ export function LiquidCanvas({ mousePosition, className = "" }: LiquidCanvasProp
           />
         </svg>
       </div>
-    )
+    );
   }
 
-  return <canvas ref={canvasRef} className={`absolute inset-0 ${className}`} />
+  return <canvas ref={canvasRef} className={`absolute inset-0 ${className}`} />;
 }

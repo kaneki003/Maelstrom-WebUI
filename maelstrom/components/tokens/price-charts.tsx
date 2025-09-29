@@ -4,24 +4,23 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
-import type { PoolData } from "@/lib/mock-api"
+import type { PoolData, Token } from "@/lib/mock-api"
 
 interface PriceChartsProps {
-  token: string
+  token: Token
   poolData: PoolData
 }
 
 export function PriceCharts({ token, poolData }: PriceChartsProps) {
   const [timeRange, setTimeRange] = useState("1H")
   
-  // Generate mock data with buy and sell prices
   const generateChartData = (points: number) => {
     return poolData.priceData.history.map(point => {
-      const basePrice = point.price / 3000 // Convert USD to ETH
+      const basePrice = point.price / 3000 
       return {
         time: new Date(point.timestamp).toISOString(),
-        buyPrice: basePrice * 1.02, // 2% spread for buy
-        sellPrice: basePrice * 0.98, // 2% spread for sell
+        buyPrice: basePrice * 1.02, 
+        sellPrice: basePrice * 0.98, 
         formattedTime: new Date(point.timestamp).toLocaleTimeString(),
       }
     })

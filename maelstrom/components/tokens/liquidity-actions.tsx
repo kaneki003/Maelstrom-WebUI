@@ -4,13 +4,12 @@ import { useState, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { LiquidityPreviewModal } from "./liquidity-preview-modal";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, RefreshCw } from "lucide-react";
+import { ETH, ETH_MOCK, Token } from "@/lib/mock-api";
 
 interface LiquidityActionsProps {
-  tokenSymbol: string;
+  token: Token | ETH;
   tokenBalance: string;
   ethBalance: string;
   lpTokenBalance: string;
@@ -18,7 +17,7 @@ interface LiquidityActionsProps {
 }
 
 export function LiquidityActions({
-  tokenSymbol = "ETC",
+  token = ETH_MOCK,
   tokenBalance = "0",
   ethBalance = "0",
   lpTokenBalance = "0",
@@ -197,7 +196,7 @@ export function LiquidityActions({
     if (parseFloat(tokenAmount) > parseFloat(tokenBalance)) {
       toast({
         title: "Insufficient Balance",
-        description: `You only have ${tokenBalance} ${tokenSymbol}`,
+        description: `You only have ${tokenBalance} ${token}`,
       });
       return;
     }
@@ -213,7 +212,7 @@ export function LiquidityActions({
     setLpAmount(calculatedLpTokens); // Clear LP input for fresh calculation
     setCurrentTab("add");
     setShowPreview(true);
-  }, [tokenAmount, ethAmount, tokenBalance, ethBalance, tokenSymbol, toast]);
+  }, [tokenAmount, ethAmount, tokenBalance, ethBalance, token, toast]);
 
   const handlePreviewRemove = useCallback(() => {
     if (!lpAmount || parseFloat(lpAmount) === 0) {
@@ -268,13 +267,13 @@ export function LiquidityActions({
   };
 
   return (
-    <Card className="p-6 relative overflow-hidden border-0 flex-col items-center justify-center">
+    <Card className="relative overflow-hidden border-0 flex-col items-center justify-center">
       <div className="absolute inset-0 bg-background-800/40 backdrop-blur-xl" />
       <div className="absolute inset-0 bg-gradient-to-br from-accent/[0.08] to-primary-500/[0.05]" />
       <div className="absolute inset-0 border border-white/[0.05] rounded-lg bg-gradient-to-b from-white/[0.05] to-transparent" />
       <CardContent className="relative w-full">
         <Tabs defaultValue="add" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 bg-black/20 p-1 rounded-2xl backdrop-blur-md border border-white/[0.05]">
+          <TabsList className="grid w-full grid-cols-2 mb-4 bg-black/20 p-1 rounded-2xl backdrop-blur-md border border-white/[0.05]">
             <TabsTrigger
               value="add"
               className="data-[state=active]:bg-gradient-to-b data-[state=active]:from-accent-cyan/20 data-[state=active]:to-primary-600/20 data-[state=active]:border-accent-cyan/20 data-[state=active]:shadow-lg data-[state=active]:text-accent-cyan rounded-xl transition-all duration-200"
@@ -305,10 +304,10 @@ export function LiquidityActions({
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-accent-cyan/20 flex items-center justify-center">
                         <span className="text-xs font-semibold text-accent-cyan">
-                          {tokenSymbol[0]}
+                          {token.symbol.toUpperCase()[0]}
                         </span>
                       </div>
-                      <span className="text-sm font-medium">{tokenSymbol}</span>
+                      <span className="text-sm font-medium">{token.symbol.toUpperCase()}</span>
                     </div>
                     <div className="text-right">
                       <div className="text-xs text-foreground/60">
@@ -362,9 +361,9 @@ export function LiquidityActions({
                 parseFloat(calculatedLpTokens) > 0) && (
                 <div className="text-center space-y-1 pt-2">
                   <div className="text-sm text-foreground/60">
-                    1 {tokenSymbol} = {(1 / poolRatio).toFixed(6)} ETH
+                    1 {token.symbol} = {(1 / poolRatio).toFixed(6)} ETH
                     <span className="mx-2">•</span>1 ETH ={" "}
-                    {poolRatio.toLocaleString()} {tokenSymbol}
+                    {poolRatio.toLocaleString()} {token.symbol}
                   </div>
                 </div>
               )}
@@ -501,10 +500,10 @@ export function LiquidityActions({
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-accent-cyan/20 flex items-center justify-center">
                         <span className="text-xs font-semibold text-accent-cyan">
-                          {tokenSymbol[0]}
+                          {token.symbol.toUpperCase()[0]}
                         </span>
                       </div>
-                      <span className="text-sm font-medium">{tokenSymbol}</span>
+                      <span className="text-sm font-medium">{token.symbol.toUpperCase()}</span>
                     </div>
                   </div>
                   <input
@@ -550,15 +549,13 @@ export function LiquidityActions({
               {parseFloat(lpAmount) > 0 && (
                 <div className="text-center space-y-1 pt-2">
                   <div className="text-sm text-foreground/60">
-                    1 {tokenSymbol} = {(1 / poolRatio).toFixed(6)} ETH
+                    1 {token.symbol} = {(1 / poolRatio).toFixed(6)} ETH
                     <span className="mx-2">•</span>1 ETH ={" "}
-                    {poolRatio.toLocaleString()} {tokenSymbol}
+                    {poolRatio.toLocaleString()} {token.symbol}
                   </div>
                 </div>
               )}
             </div>
-            {/* {parseFloat(lpAmount) > 0 && (
-            )} */}
 
             {/* Remove Liquidity Button */}
             <Button
@@ -579,7 +576,7 @@ export function LiquidityActions({
           isOpen={showPreview}
           onClose={() => setShowPreview(false)}
           onConfirm={handleConfirmLiquidity}
-          tokenSymbol={tokenSymbol}
+          token={token}
           isWithdraw={currentTab === "remove"}
           tokenAmount={tokenAmount || calculatedTokensToReceive.token}
           ethAmount={ethAmount || calculatedTokensToReceive.eth}

@@ -28,15 +28,15 @@ export function usePools() {
       
       // Transform the data to match PoolMock interface
       const transformedPools: PoolMock[] = rawPools.map(pool => ({
-        slug: pool.token,
-        symbol: pool.symbol,
-        name: pool.name,
-        priceUSD: Number.parseFloat(pool.spotPrice) / 1e18,
+        slug: pool.token.symbol,
+        symbol: pool.token.symbol,
+        name: pool.token.name,
+        priceUSD: Number.parseFloat(pool.avgPrice) / 1e18,
         priceChange24hPct: (Math.random() - 0.5) * 20, // Mock 24h change
-        liquidityUSD: Number.parseFloat(pool.tvl),
+        liquidityUSD: Number.parseFloat(pool.totalLiquidty),
         lastExchangeTs: pool.lastUpdated,
         priceHistory24h: Array.from({ length: 24 }, () => 
-          Number.parseFloat(pool.spotPrice) / 1e18 * (1 + (Math.random() - 0.5) * 0.1)
+          Number.parseFloat(pool.avgPrice) / 1e18 * (1 + (Math.random() - 0.5) * 0.1)
         )
       }))
       

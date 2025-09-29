@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import CircularText from "@/components/CircularText";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { WaveRippleCanvas } from "../ui/wave-ripple-canvas";
 
 export function HeroSection() {

@@ -167,8 +167,7 @@ export function LiquidityBreakdown({ poolData }: LiquidityBreakdownProps) {
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-white mb-1">
-                  $
-                  {"4,008.92"}
+                  ${"4,008.92"}
                 </div>
                 <div className="text-sm text-muted-foreground/80">
                   Current Price
@@ -197,53 +196,6 @@ export function LiquidityBreakdown({ poolData }: LiquidityBreakdownProps) {
           </div>
         </div>
 
-        {/* Pool Details with enhanced styling - Takes remaining space */}
-        {/* <div className="flex-1 space-y-4 bg-white/[0.01] rounded-2xl p-6 border border-white/[0.05] shadow-lg backdrop-blur-md">
-          <h3 className="text-lg font-semibold text-white/90 font-plus-jakarta flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></div>
-            Pool Information
-          </h3>
-          
-          <div className="space-y-4">
-            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.05]">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground/80 font-medium">Pool Ratio</span>
-                <span className="font-semibold text-white">1 {poolData.symbol} = {poolData.poolRatio} ETH</span>
-              </div>
-            </div>
-            
-            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.05]">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground/80 font-medium">Total Pool Value</span>
-                <span className="font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/90 text-lg">
-                  {poolData.totalValue}
-                </span>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              <div className="bg-black/10 rounded-xl p-4 text-center">
-                <div className="text-sm text-muted-foreground/80 mb-1">24h Volume</div>
-                <div className="text-lg font-bold text-green-400">$2.4M</div>
-              </div>
-              <div className="bg-black/10 rounded-xl p-4 text-center">
-                <div className="text-sm text-muted-foreground/80 mb-1">Total Fees</div>
-                <div className="text-lg font-bold text-cyan-400">$12.3K</div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-black/10 rounded-xl p-4 text-center">
-                <div className="text-sm text-muted-foreground/80 mb-1">LP Holders</div>
-                <div className="text-lg font-bold text-purple-400">847</div>
-              </div>
-              <div className="bg-black/10 rounded-xl p-4 text-center">
-                <div className="text-sm text-muted-foreground/80 mb-1">Pool Age</div>
-                <div className="text-lg font-bold text-orange-400">23d</div>
-              </div>
-            </div>
-          </div>
-        </div> */}
       </CardContent>
     </Card>
   );

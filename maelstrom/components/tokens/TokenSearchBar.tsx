@@ -2,40 +2,20 @@
 
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import debounce from "lodash/debounce";
 
 interface TokenSearchBarProps {
   onSearch?: (query: string) => void;
-  onFilterChange?: (filter: "all" | "active" | "new") => void;
-  onAutoRefreshToggle?: (enabled: boolean) => void;
 }
 
-export function TokenSearchBar({
-  onSearch,
-  onFilterChange,
-  onAutoRefreshToggle,
-}: TokenSearchBarProps) {
-  const [filter, setFilter] = useState<"all" | "active" | "new">("all");
-  const [autoRefresh, setAutoRefresh] = useState(false);
-
-  // Debounced search handler
+export function TokenSearchBar({ onSearch }: TokenSearchBarProps) {
   const debouncedSearch = useCallback(
     debounce((value: string) => {
       onSearch?.(value);
     }, 300),
     [onSearch]
   );
-
-  const handleFilterChange = (newFilter: "all" | "active" | "new") => {
-    setFilter(newFilter);
-    onFilterChange?.(newFilter);
-  };
-
-  const handleAutoRefreshToggle = (checked: boolean) => {
-    setAutoRefresh(checked);
-    onAutoRefreshToggle?.(checked);
-  };
 
   return (
     <div className="relative flex items-center justify-between w-full p-4  border-white/[0.05] rounded-lg">

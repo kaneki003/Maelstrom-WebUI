@@ -61,11 +61,7 @@ export function TokenList() {
     return (
       <div>
         <div className="mb-6">
-          <TokenSearchBar
-            onSearch={setSearch}
-            onFilterChange={setFilter}
-            onAutoRefreshToggle={setAutoRefresh}
-          />
+          <TokenSearchBar onSearch={setSearch} />
         </div>
         <div className="relative flex flex-col items-center justify-center py-12 px-4">
           <div className="text-center space-y-4 max-w-md mx-auto">
@@ -90,11 +86,7 @@ export function TokenList() {
     <div className="space-y-4 animate-fade-in">
       {/* Search Bar */}
       <div className="mb-6">
-        <TokenSearchBar
-          onSearch={setSearch}
-          onFilterChange={setFilter}
-          onAutoRefreshToggle={setAutoRefresh}
-        />
+        <TokenSearchBar onSearch={setSearch} />
       </div>
 
       {/* Pool List */}

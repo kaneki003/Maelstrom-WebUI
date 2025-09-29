@@ -9,16 +9,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Clock, AlertTriangle, Zap } from "lucide-react";
+import { ETH, Token } from "@/lib/mock-api";
 
 interface SwapPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  tokenA: string;
-  tokenB: string;
-  amountA: string;
-  amountB: string;
-  priceImpact: number;
+  tokenIn: Token | ETH;
+  tokenOut: Token | ETH;
+  amountIn: string;
+  amountOut: string;
   loading: boolean;
 }
 
@@ -26,16 +26,14 @@ export function SwapPreviewModal({
   isOpen,
   onClose,
   onConfirm,
-  tokenA,
-  tokenB,
-  amountA,
-  amountB,
-  priceImpact,
+  tokenIn,
+  tokenOut,
+  amountIn,
+  amountOut,
   loading,
 }: SwapPreviewModalProps) {
-  const tokenASymbol = tokenA.toUpperCase();
-  const tokenBSymbol = tokenB.toUpperCase();
-  const isHighImpact = priceImpact > 3;
+  const tokenInSymbol = tokenIn.symbol.toUpperCase();
+  const tokenOutSymbol = tokenOut.symbol.toUpperCase();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -54,7 +52,7 @@ export function SwapPreviewModal({
                 <div className="text-center">
                   <p className="text-sm text-white/60 font-medium mb-1 font-plus-jakarta">You pay</p>
                   <p className="text-lg font-semibold text-white/90 font-plus-jakarta">
-                    {amountA} {tokenASymbol}
+                    {amountIn} {tokenInSymbol}
                   </p>
                 </div>
                 <div className="relative px-4">
@@ -64,7 +62,7 @@ export function SwapPreviewModal({
                 <div className="text-center">
                   <p className="text-sm text-white/60 font-medium mb-1 font-plus-jakarta">You receive</p>
                   <p className="text-lg font-semibold text-white/90 font-plus-jakarta">
-                    {amountB} {tokenBSymbol}
+                    {amountOut} {tokenOutSymbol}
                   </p>
                 </div>
               </div>
@@ -73,22 +71,6 @@ export function SwapPreviewModal({
 
           {/* Swap Details */}
           <div className="space-y-3 p-4 bg-white/[0.02] rounded-xl border border-white/[0.05] backdrop-blur-sm">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-accent-cyan" />
-                <span className="text-white/70 font-medium font-plus-jakarta">Price Impact</span>
-              </div>
-              <span className={`font-medium font-plus-jakarta ${
-                isHighImpact 
-                  ? "text-red-400" 
-                  : "text-white/90"
-              }`}>
-                {priceImpact.toFixed(2)}%
-                {isHighImpact && (
-                  <AlertTriangle className="h-4 w-4 inline ml-1 text-red-400" />
-                )}
-              </span>
-            </div>
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-accent-cyan" />

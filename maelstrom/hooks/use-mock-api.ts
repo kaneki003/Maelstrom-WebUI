@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { mockApi, type Pool, type TradeResult } from "@/lib/mock-api"
+import { mockApi, type Pool, type SwapRequest, type SellRequest, type BuyRequest, type BuyResult, type SellResult, type SwapResult, Token } from "@/lib/mock-api"
 
 export function usePools() {
   const [pools, setPools] = useState<Pool[]>([])
@@ -28,7 +28,7 @@ export function usePools() {
   return { pools, loading, error, refetch: fetchPools }
 }
 
-export function usePool(token: string) {
+export function usePool(token: Token) {
   const [pool, setPool] = useState<Pool | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -36,7 +36,7 @@ export function usePool(token: string) {
   const fetchPool = async () => {
     try {
       setLoading(true)
-      const data = await mockApi.getPool(token)
+      const data = await mockApi.getPool(token.symbol.toLowerCase())
       setPool(data)
       setError(null)
     } catch (err) {
@@ -59,43 +59,70 @@ export function useTrade() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const executeBuy = async (token: string, ethAmount: string): Promise<TradeResult | null> => {
+  const executeBuy = async (buyRequest: BuyRequest): Promise<BuyResult> => {
     try {
       setLoading(true)
       setError(null)
-      const result = await mockApi.buy(token, ethAmount)
+      const result = await mockApi.buy(buyRequest)
       return result
     } catch (err) {
       setError(err instanceof Error ? err.message : "Trade failed")
-      return null
+      const result: BuyResult = {
+        success: false,
+        txHash: "",
+        buyRequest,
+        amountOut: "0",
+        fee: "0",
+        timestamp: Date.now(),
+        error: err instanceof Error ? err.message : "Trade failed"
+      }
+      return result
     } finally {
       setLoading(false)
     }
   }
 
-  const executeSell = async (token: string, tokenAmount: string): Promise<TradeResult | null> => {
+  const executeSell = async (sellRequest: SellRequest): Promise<SellResult> => {
     try {
       setLoading(true)
       setError(null)
-      const result = await mockApi.sell(token, tokenAmount)
+      const result = await mockApi.sell(sellRequest)
       return result
     } catch (err) {
       setError(err instanceof Error ? err.message : "Trade failed")
-      return null
+      const result: SellResult = {
+        success: false,
+        txHash: "",
+        sellRequest,
+        amountOut: "0",
+        fee: "0",
+        timestamp: Date.now(),
+        error: err instanceof Error ? err.message : "Trade Failed"
+      }
+      return result
     } finally {
       setLoading(false)
     }
   }
 
-  const executeSwap = async (tokenA: string, tokenB: string, amountIn: string): Promise<TradeResult | null> => {
+  const executeSwap = async (swapRequest: SwapRequest): Promise<SwapResult> => {
     try {
       setLoading(true)
       setError(null)
-      const result = await mockApi.swap(tokenA, tokenB, amountIn)
+      const result = await mockApi.swap(swapRequest);
       return result
     } catch (err) {
       setError(err instanceof Error ? err.message : "Swap failed")
-      return null
+      const result: SwapResult = {
+        success: false,
+        txHash: "",
+        swapRequest,
+        amountOut: "0",
+        fee: "0",
+        timestamp: Date.now(),
+        error: err instanceof Error ? err.message : "Trade Failed"
+      }
+      return result
     } finally {
       setLoading(false)
     }
@@ -130,10 +157,10 @@ export function useMockData() {
       // Get pools to calculate statistics
       const pools = await mockApi.getPools()
       const activePools = pools.length
-      
+
       // Calculate total liquidity across all pools
       const totalLiquidity = pools.reduce((sum, pool) => {
-        const ethReserve = BigInt(pool.ethReserveWei)
+        const ethReserve = BigInt(pool.ethReserve)
         return sum + ethReserve
       }, BigInt(0))
 
@@ -141,7 +168,7 @@ export function useMockData() {
       const portfolioValue = totalLiquidity / BigInt(12) // Just an example fraction of total liquidity
 
       // Calculate average APY from pool data
-      const avgApy = pools.reduce((sum, pool) => sum + pool.apy, 0) / pools.length
+      const avgApy = pools.reduce((sum, pool) => sum + pool.apr, 0) / pools.length
 
       setData({
         portfolioValue: (Number(portfolioValue) / 1e18).toFixed(2),

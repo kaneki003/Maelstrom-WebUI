@@ -94,9 +94,6 @@ export function Footer({
               <p className="text-lg font-bold text-foreground">
                 The Stable Order
               </p>
-              {/* <p className="text-sm text-muted-foreground">
-                Decentralized auction platform
-              </p> */}
             </div>
           </div>
 

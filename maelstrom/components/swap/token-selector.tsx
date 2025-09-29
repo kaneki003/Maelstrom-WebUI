@@ -9,8 +9,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Search, ChevronDown } from "lucide-react";
+import { Token, Tokens } from "@/lib/mock-api";
 
 export type ExchangeRates = {
   dai: number;
@@ -18,42 +18,11 @@ export type ExchangeRates = {
   wbtc: number;
 };
 
-interface Token {
-  symbol: keyof ExchangeRates;
-  name: string;
-  balance: string;
-  price: string;
-  change24h: number;
-  icon?: string;
-}
 
-const tokens: Token[] = [
-  {
-    symbol: "dai",
-    name: "Dai Stablecoin",
-    balance: "1250.50",
-    price: "0.0003125 ETH",
-    change24h: 0.1,
-  },
-  {
-    symbol: "usdc",
-    name: "USD Coin",
-    balance: "890.25",
-    price: "$1.00",
-    change24h: -0.05,
-  },
-  {
-    symbol: "wbtc",
-    name: "Wrapped Bitcoin",
-    balance: "0.0234",
-    price: "$67,500",
-    change24h: 1.8,
-  },
-];
 
 interface TokenSelectorProps {
-  selectedToken: keyof ExchangeRates;
-  onTokenChange: (token: keyof ExchangeRates) => void;
+  selectedToken: Token;
+  onTokenChange: (token: Token) => void;
 }
 
 export function TokenSelector({
@@ -63,16 +32,16 @@ export function TokenSelector({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const selectedTokenData = tokens.find(
-    (token) => token.symbol === selectedToken
+  const selectedTokenData = Tokens.find(
+    (token) => token === selectedToken
   );
-  const filteredTokens = tokens.filter(
+  const filteredTokens = Tokens.filter(
     (token) =>
       token.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
       token.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleTokenSelect = (token: keyof ExchangeRates) => {
+  const handleTokenSelect = (token: Token) => {
     onTokenChange(token);
     setIsOpen(false);
     setSearchQuery("");
@@ -120,7 +89,7 @@ export function TokenSelector({
                 <Button
                   key={token.symbol}
                   variant="ghost"
-                  onClick={() => handleTokenSelect(token.symbol)}
+                  onClick={() => handleTokenSelect(token)}
                   className="w-full h-auto p-3 justify-start hover:bg-accent/10"
                 >
                   <div className="flex items-center justify-between w-full">
@@ -135,23 +104,6 @@ export function TokenSelector({
                         <p className="text-xs text-muted-foreground">
                           {token.name}
                         </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">{token.balance}</p>
-                      <div className="flex items-center gap-1">
-                        <p className="text-xs text-muted-foreground">
-                          {token.price}
-                        </p>
-                        <Badge
-                          variant={
-                            token.change24h >= 0 ? "default" : "destructive"
-                          }
-                          className="text-xs h-4 px-1"
-                        >
-                          {token.change24h >= 0 ? "+" : ""}
-                          {token.change24h.toFixed(1)}%
-                        </Badge>
                       </div>
                     </div>
                   </div>

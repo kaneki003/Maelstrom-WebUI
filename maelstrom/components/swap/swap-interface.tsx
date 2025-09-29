@@ -10,28 +10,30 @@ import { Button } from "@/components/ui/button";
 import { useTrade } from "@/hooks/use-mock-api";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowDownUp, Settings } from "lucide-react";
+import {
+  DAI_MOCK,
+  ETH_MOCK,
+  SwapRequest,
+  Token,
+  WBTC_MOCK,
+} from "@/lib/mock-api";
 
 interface SwapState {
-  tokenA: keyof ExchangeRates;
-  tokenB: keyof ExchangeRates;
-  amountA: string;
-  amountB: string;
+  tokenIn: Token;
+  tokenOut: Token;
+  amountIn: string;
+  amountOut: string;
 }
 
 export function SwapInterface() {
   const [swapState, setSwapState] = useState<SwapState>({
-    tokenA: "eth",
-    tokenB: "dai",
-    amountA: "",
-    amountB: "",
+    tokenIn: DAI_MOCK,
+    tokenOut: WBTC_MOCK,
+    amountIn: "",
+    amountOut: "",
   });
   const [showPreview, setShowPreview] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [slippage, setSlippage] = useState(0.5);
-  const [deadline, setDeadline] = useState(20);
-  const [priceImpact, setPriceImpact] = useState(0);
   const [isSwapping, setIsSwapping] = useState(false);
-
   const { executeSwap, loading } = useTrade();
   const { toast } = useToast();
   const swapButtonRef = useRef<HTMLButtonElement>(null);
@@ -55,41 +57,56 @@ export function SwapInterface() {
     const impact = Math.min(amount / 100, 0.05);
     const output = amount * rate * (1 - impact);
 
-    setPriceImpact(impact * 100);
     return output.toFixed(toToken === "wbtc" ? 6 : 2);
   };
 
-  const handleAmountAChange = (value: string) => {
+  const handleAmountInChange = (value: string) => {
     setSwapState((prev) => ({
       ...prev,
-      amountA: value,
-      amountB: calculateOutput(value, prev.tokenA, prev.tokenB),
+      amountIn: value,
+      amountOut: calculateOutput(
+        value,
+        prev.tokenIn.symbol.toLowerCase(),
+        prev.tokenOut.symbol.toLowerCase()
+      ),
     }));
   };
 
-  const handleAmountBChange = (value: string) => {
+  const handleAmountOutChange = (value: string) => {
     setSwapState((prev) => ({
       ...prev,
-      amountB: value,
-      amountA: calculateOutput(value, prev.tokenB, prev.tokenA),
+      amountOut: value,
+      amountIn: calculateOutput(
+        value,
+        prev.tokenOut.symbol.toLowerCase(),
+        prev.tokenIn.symbol.toLowerCase()
+      ),
     }));
   };
 
-  const handleTokenAChange = (token: keyof ExchangeRates) => {
+  const handletokenInChange = (token: Token) => {
     setSwapState((prev) => {
-      const newState = { ...prev, tokenA: token };
-      if (prev.amountA) {
-        newState.amountB = calculateOutput(prev.amountA, token, prev.tokenB);
+      const newState = { ...prev, tokenIn: token };
+      if (prev.amountIn) {
+        newState.amountOut = calculateOutput(
+          prev.amountIn,
+          token.symbol.toLowerCase(),
+          prev.tokenOut.symbol.toLowerCase()
+        );
       }
       return newState;
     });
   };
 
-  const handleTokenBChange = (token: keyof ExchangeRates) => {
+  const handletokenOutChange = (token: Token) => {
     setSwapState((prev) => {
-      const newState = { ...prev, tokenB: token };
-      if (prev.amountA) {
-        newState.amountB = calculateOutput(prev.amountA, prev.tokenA, token);
+      const newState = { ...prev, tokenOut: token };
+      if (prev.amountIn) {
+        newState.amountOut = calculateOutput(
+          prev.amountIn,
+          prev.tokenIn.symbol.toLowerCase(),
+          token.symbol.toLowerCase()
+        );
       }
       return newState;
     });
@@ -98,10 +115,10 @@ export function SwapInterface() {
   const handleSwapTokens = () => {
     setIsSwapping(true);
     setSwapState((prev) => ({
-      tokenA: prev.tokenB,
-      tokenB: prev.tokenA,
-      amountA: prev.amountB,
-      amountB: prev.amountA,
+      tokenIn: prev.tokenOut,
+      tokenOut: prev.tokenIn,
+      amountIn: prev.amountOut,
+      amountOut: prev.amountIn,
     }));
 
     if (swapButtonRef.current) {
@@ -114,7 +131,7 @@ export function SwapInterface() {
   };
 
   const handlePreviewSwap = () => {
-    if (!swapState.amountA || !swapState.amountB) {
+    if (!swapState.amountIn || !swapState.amountOut) {
       toast({
         title: "Invalid Amount",
         description: "Please enter an amount to swap",
@@ -125,22 +142,23 @@ export function SwapInterface() {
   };
 
   const handleConfirmSwap = async () => {
-    const result = await executeSwap(
-      swapState.tokenA,
-      swapState.tokenB,
-      swapState.amountA
-    );
-    if (result) {
+    const swapRequest: SwapRequest = {
+      tokenIn: swapState.tokenIn,
+      tokenOut: swapState.tokenOut,
+      amountIn: swapState.amountIn,
+    };
+    const result = await executeSwap(swapRequest);
+    if (result.success) {
       toast({
         title: "Swap Successful!",
-        description: `Swapped ${
-          swapState.amountA
-        } ${swapState.tokenA.toUpperCase()} for ${Number.parseFloat(
-          result.amountOut
-        ).toFixed(4)} ${swapState.tokenB.toUpperCase()}`,
+        description: `Tx Hash: ${result.txHash}`,
       });
-      setSwapState((prev) => ({ ...prev, amountA: "", amountB: "" }));
-      setShowPreview(false);
+    } else {
+      toast({
+        title: "Swap Failed",
+        description:
+          result.error || "An error occurred during the swap process.",
+      });
     }
   };
 
@@ -151,7 +169,7 @@ export function SwapInterface() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--accent-cyan)/10%,transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--primary-500)/10%,transparent_50%)]" />
         <div className="absolute inset-0 border border-white/[0.05] rounded-3xl bg-gradient-to-b from-white/[0.05] to-transparent" />
-        
+
         <div className="relative p-6 backdrop-blur-sm">
           {/* Top Navigation */}
           <div className="mb-6">
@@ -183,24 +201,23 @@ export function SwapInterface() {
                 <div className="space-y-1">
                   <div className="relative bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-300 rounded-2xl p-5 border border-white/[0.05] shadow-lg backdrop-blur-md group">
                     <div className="flex items-center justify-between mb-3">
-                      <div className="text-lg font-medium text-white/90 font-plus-jakarta">Sell</div>
+                      <div className="text-lg font-medium text-white/90 font-plus-jakarta">
+                        Sell
+                      </div>
                       <TokenSelector
-                        selectedToken={swapState.tokenA}
-                        onTokenChange={handleTokenAChange}
+                        selectedToken={swapState.tokenIn}
+                        onTokenChange={handletokenInChange}
                       />
                     </div>
                     <div className="relative">
                       <input
                         placeholder="0.00"
-                        value={swapState.amountA}
-                        onChange={(e) => handleAmountAChange(e.target.value)}
+                        value={swapState.amountIn}
+                        onChange={(e) => handleAmountInChange(e.target.value)}
                         className="w-full h-16 text-3xl font-medium bg-black/10 group-hover:bg-black/20 rounded-xl px-4 
                           border border-white/[0.05] focus:border-accent-cyan/30 focus:ring-2 focus:ring-accent-cyan/20
                           placeholder:text-white/20 transition-all duration-300 font-plus-jakarta"
                       />
-                      <div className="absolute right-3 bottom-2 text-sm text-white/40 font-medium">
-                        ≈ $0.00
-                      </div>
                     </div>
                   </div>
 
@@ -221,37 +238,36 @@ export function SwapInterface() {
                     <div className="flex items-center justify-between mb-1">
                       <div className="text-lg font-medium text-white">Buy</div>
                       <TokenSelector
-                        selectedToken={swapState.tokenB}
-                        onTokenChange={handleTokenBChange}
+                        selectedToken={swapState.tokenOut}
+                        onTokenChange={handletokenOutChange}
                       />
                     </div>
                     <div className="relative">
                       <input
                         placeholder="0.00"
-                        value={swapState.amountB}
-                        onChange={(e) => handleAmountBChange(e.target.value)}
+                        value={swapState.amountOut}
+                        onChange={(e) => handleAmountOutChange(e.target.value)}
                         className="w-full h-16 text-3xl font-medium bg-black/20 rounded-lg px-4 
                           border-transparent focus:border-accent/50 focus:ring-1 focus:ring-accent/50
                           placeholder:text-white/30 transition-all duration-200"
                       />
-                      <div className="absolute right-3 bottom-2 text-sm text-white/50">
-                        ≈ $0.00
-                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Swap Details */}
-                {swapState.amountA && swapState.amountB && (
+                {swapState.amountIn && swapState.amountOut && (
                   <div className="mt-5 space-y-3 p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl backdrop-blur-sm">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-white/50 font-medium">Rate</span>
                       <span className="text-white/80 font-medium">
-                        1 {swapState.tokenA.toUpperCase()} ={" "}
-                        {exchangeRates[swapState.tokenA]?.[
-                          swapState.tokenB
-                        ]?.toFixed(2)}{" "}
-                        {swapState.tokenB.toUpperCase()}
+                        1 {swapState.tokenIn.symbol.toUpperCase()} ={" "}
+                        {exchangeRates[
+                          swapState.tokenIn.symbol.toLowerCase()
+                        ]?.[swapState.tokenOut.symbol.toLowerCase()]?.toFixed(
+                          2
+                        )}{" "}
+                        {swapState.tokenOut.symbol.toUpperCase()}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
@@ -264,7 +280,9 @@ export function SwapInterface() {
                 {/* Swap Action Button */}
                 <Button
                   onClick={handlePreviewSwap}
-                  disabled={!swapState.amountA || !swapState.amountB || loading}
+                  disabled={
+                    !swapState.amountIn || !swapState.amountOut || loading
+                  }
                   className="w-full h-14 mt-6 bg-gradient-to-r from-accent-cyan to-primary-500 hover:from-accent-cyan/90 hover:to-primary-500/90 
                     text-white font-semibold rounded-xl shadow-lg hover:shadow-accent-cyan/25 transition-all duration-300 
                     disabled:from-gray-600/50 disabled:to-gray-700/50 disabled:cursor-not-allowed disabled:text-white/50
@@ -279,11 +297,11 @@ export function SwapInterface() {
               </TabsContent>
 
               <TabsContent value="buy" className="mt-2">
-                <BuyForm onExecute={() => {}} />
+                <BuyForm />
               </TabsContent>
 
               <TabsContent value="sell" className="mt-2">
-                <SellForm onExecute={() => {}} />
+                <SellForm />
               </TabsContent>
             </Tabs>
           </div>
@@ -292,14 +310,12 @@ export function SwapInterface() {
             isOpen={showPreview}
             onClose={() => setShowPreview(false)}
             onConfirm={handleConfirmSwap}
-            tokenA={swapState.tokenA}
-            tokenB={swapState.tokenB}
-            amountA={swapState.amountA}
-            amountB={swapState.amountB}
-            priceImpact={priceImpact}
+            tokenIn={swapState.tokenIn}
+            tokenOut={swapState.tokenOut}
+            amountIn={swapState.amountIn}
+            amountOut={swapState.amountOut}
             loading={loading}
           />
-
         </div>
       </div>
     </div>

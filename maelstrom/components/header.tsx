@@ -1,31 +1,29 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { WalletModal } from "@/components/wallet-modal"
-import { ChevronDown, Waves } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { WalletModal } from "@/components/wallet-modal";
+import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Swap", href: "/swap" },
   { name: "Tokens", href: "/tokens" },
   { name: "Dashboard", href: "/dashboard" },
-]
+];
 
 const popularTokens = [
   { symbol: "ETH", name: "Ethereum", href: "/tokens/eth" },
   { symbol: "DAI", name: "Dai Stablecoin", href: "/tokens/dai" },
   { symbol: "USDC", name: "USD Coin", href: "/tokens/usdc" },
   { symbol: "WBTC", name: "Wrapped Bitcoin", href: "/tokens/wbtc" },
-]
+];
 
 export function Header() {
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
-  const pathname = usePathname()
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
@@ -37,10 +35,10 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative">
-              <img 
-              src="/logo_maelstrom.svg" 
-              alt="Maelstrom Logo" 
-              className="h-8 w-8 transition-all duration-300 group-hover:scale-110 dark:invert" 
+              <img
+                src="/logo_maelstrom.svg"
+                alt="Maelstrom Logo"
+                className="h-8 w-8 transition-all duration-300 group-hover:scale-110 dark:invert"
               />
             </div>
             <span className="text-xl font-bold gradient-text">Maelstrom</span>
@@ -55,7 +53,9 @@ export function Header() {
                 data-tour={`${item.name.toLowerCase()}-link`}
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-accent relative group",
-                  pathname === item.href ? "text-accent" : "text-muted-foreground",
+                  pathname === item.href
+                    ? "text-accent"
+                    : "text-muted-foreground"
                 )}
               >
                 {item.name}
@@ -65,26 +65,6 @@ export function Header() {
                 <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-accent rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
               </Link>
             ))}
-
-            {/* Tokens Dropdown
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-accent">
-                  Tokens
-                  <ChevronDown className="ml-1 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                {popularTokens.map((token) => (
-                  <DropdownMenuItem key={token.symbol} asChild>
-                    <Link href={token.href} className="flex items-center justify-between">
-                      <span className="font-medium">{token.symbol}</span>
-                      <span className="text-xs text-muted-foreground">{token.name}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu> */}
           </nav>
 
           {/* Right side actions */}
@@ -101,7 +81,10 @@ export function Header() {
         </div>
       </header>
 
-      <WalletModal isOpen={isWalletModalOpen} onClose={() => setIsWalletModalOpen(false)} />
+      <WalletModal
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+      />
     </>
-  )
+  );
 }

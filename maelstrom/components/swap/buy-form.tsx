@@ -7,43 +7,34 @@ import { useTrade } from "@/hooks/use-mock-api";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowDownUp } from "lucide-react";
 import { ExchangeRates, TokenSelector } from "./token-selector";
+import { BuyRequest, BuyResult, DAI_MOCK, ETH_MOCK, Token } from "@/lib/mock-api";
 
-interface BuyFormProps {
-  onExecute: (amount: string) => void;
-}
 
-export function BuyForm({ onExecute }: BuyFormProps) {
+export function BuyForm() {
   const [ethAmount, setEthAmount] = useState("");
   const [tokenAmount, setTokenAmount] = useState("");
   const [showPreview, setShowPreview] = useState(false);
-  const [priceImpact, setPriceImpact] = useState(0);
   const [isEthInput, setIsEthInput] = useState(true);
-  const { executeSwap, loading } = useTrade();
+  const { executeBuy, loading } = useTrade();
   const { toast } = useToast();
-  const [token, setToken] = useState<keyof ExchangeRates>("dai");
+  const [token, setToken] = useState<Token>(DAI_MOCK);
 
-  // Mock exchange rates (in ETH terms)
   const exchangeRates = {
-    dai: 0.0003125, // 1 DAI = 0.0003125 ETH (1 ETH = 3200 DAI)
-    usdc: 0.0003125, // 1 USDC = 0.0003125 ETH (1 ETH = 3200 USDC)
-    wbtc: 21.09375, // 1 WBTC = 21.09375 ETH (1 ETH = 0.047407 WBTC)
+    dai: 0.0003125, 
+    usdc: 0.0003125, 
+    wbtc: 21.09375,
   };
 
   const handleInputChange = (value: string) => {
+    if(!token) return;
     if (!isEthInput) {
       setTokenAmount(value);
-      // Convert token to ETH amount
-      const ethValue = Number(value) * exchangeRates[token];
+      const ethValue = Number(value) * exchangeRates[token.symbol.toLowerCase() as keyof ExchangeRates];
       setEthAmount(ethValue.toFixed(6));
-      // Calculate price impact (example: 1% for every 1000 token units)
-      setPriceImpact(Math.min(Number(value) / 1000, 3));
     } else {
       setEthAmount(value);
-      // Convert ETH to token amount
-      const tokenValue = Number(value) / exchangeRates[token];
-      setTokenAmount(tokenValue.toFixed(token === "wbtc" ? 6 : 2));
-      // Calculate price impact based on ETH amount
-      setPriceImpact(Math.min(Number(value) * 10, 3));
+      const tokenValue = Number(value) / exchangeRates[token.symbol.toLowerCase() as keyof ExchangeRates];
+      setTokenAmount(tokenValue.toFixed(token.symbol.toLowerCase() === "wbtc" ? 6 : 2));
     }
   };
 
@@ -63,35 +54,27 @@ export function BuyForm({ onExecute }: BuyFormProps) {
   };
 
   const handleConfirmBuy = async () => {
-    let result;
-
-    if (!isEthInput) {
-      // User is inputting tokens (wants to buy ETH)
-      result = await executeSwap(token, "eth", tokenAmount);
-
-      if (result) {
-        toast({
-          title: "Swap Successful!",
-          description: `Swapped ${tokenAmount} ${token.toUpperCase()} for ${ethAmount} ETH`,
-        });
-      }
-    } else {
-      // User is inputting ETH (wants to buy tokens)
-      result = await executeSwap("eth", token, ethAmount);
-
-      if (result) {
-        toast({
-          title: "Swap Successful!",
-          description: `Swapped ${ethAmount} ETH for ${tokenAmount} ${token.toUpperCase()}`,
-        });
-      }
+    if(!token) return;
+    const request: BuyRequest = {
+      token,
+      amountIn: ethAmount,
+    };
+    const result: BuyResult = await executeBuy(request);
+    if(result.success){
+      toast({
+        title: "Buy Successful!",
+        description: `Tx Hash: ${result.txHash}`,
+      });
+    }else{
+      toast({
+        title: "Buy Failed",
+        description: result.error || "An error occurred during the buy process.",
+      })
     }
-
     if (result) {
       setEthAmount("");
       setTokenAmount("");
       setShowPreview(false);
-      onExecute(isEthInput ? ethAmount : tokenAmount);
     }
   };
 
@@ -122,7 +105,7 @@ export function BuyForm({ onExecute }: BuyFormProps) {
           />
           {!isEthInput && (
             <div className="ml-2">
-              <TokenSelector selectedToken={token} onTokenChange={setToken} />
+              <TokenSelector selectedToken={token? token : DAI_MOCK} onTokenChange={setToken} />
             </div>
           )}
           {isEthInput && (
@@ -160,7 +143,7 @@ export function BuyForm({ onExecute }: BuyFormProps) {
               />
           {isEthInput && (
             <div className="ml-2">
-              <TokenSelector selectedToken={token} onTokenChange={setToken} />
+              <TokenSelector selectedToken={token ? token : DAI_MOCK} onTokenChange={setToken} />
             </div>
           )}
           {!isEthInput && (
@@ -198,11 +181,10 @@ export function BuyForm({ onExecute }: BuyFormProps) {
         isOpen={showPreview}
         onClose={() => setShowPreview(false)}
         onConfirm={handleConfirmBuy}
-        tokenA={isEthInput ? "eth" : token}
-        tokenB={isEthInput ? token : "eth"}
-        amountA={isEthInput ? ethAmount : tokenAmount}
-        amountB={isEthInput ? tokenAmount : ethAmount}
-        priceImpact={priceImpact}
+        tokenIn={ETH_MOCK}
+        tokenOut={token? token : DAI_MOCK}
+        amountIn={ethAmount}
+        amountOut={tokenAmount}
         loading={loading}
       />
     </div>

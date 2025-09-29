@@ -41,7 +41,7 @@ export function ValuePropsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {valueProps.map((prop, index) => (
+          {valueProps.map((prop) => (
             <Card
               key={prop.title}
               className="group hover:shadow-medium transition-all duration-300 hover:-translate-y-2 border-border/50 bg-card/50 backdrop-blur-sm relative overflow-hidden cursor-pointer"

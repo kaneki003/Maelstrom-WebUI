@@ -1,16 +1,12 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { usePool } from "@/hooks/use-mock-api"
-import { TrendingUp, TrendingDown, ExternalLink, Star } from "lucide-react"
-import type { PoolData } from "@/lib/mock-api"
+import { Badge } from "@/components/ui/badge";
+import { Star } from "lucide-react";
+import type { PoolData, Token } from "@/lib/mock-api";
 
 interface TokenHeaderProps {
-  token: string
-  poolData?: PoolData
+  token: Token;
+  poolData?: PoolData;
 }
 
 export function TokenHeader({ token }: TokenHeaderProps) {
@@ -27,7 +23,7 @@ export function TokenHeader({ token }: TokenHeaderProps) {
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-500 to-primary-600 p-[1px]">
           <div className="w-full h-full rounded-xl bg-gradient-to-br from-background-900 to-background-800 flex items-center justify-center">
             <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent-500 to-primary-500">
-              {token.charAt(0).toUpperCase()}
+              {token.symbol.charAt(0).toUpperCase()}
             </span>
           </div>
         </div>
@@ -36,12 +32,11 @@ export function TokenHeader({ token }: TokenHeaderProps) {
         <div className="space-y-1">
           <h1 className="text-2xl font-bold flex items-center gap-2 font-clash-display">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/90">
-              {token.toUpperCase()} / ETH Pool
+              {token.symbol.toUpperCase()} / ETH Pool
             </span>
-            <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 animate-pulse" />
           </h1>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge 
+            <Badge
               variant="secondary"
               className="text-xs bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 text-emerald-400"
             >
@@ -51,5 +46,5 @@ export function TokenHeader({ token }: TokenHeaderProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
