@@ -51,7 +51,7 @@ export function LiquidityBreakdown({ poolData }: LiquidityBreakdownProps) {
           </div>
         </div>
 
-        <div className="bg-white/[0.01] rounded-2xl px-4 py-4 border border-white/[0.05] shadow-lg backdrop-blur-md mb-4 flex items-center justify-around gap-4">
+        <div className="py-4 mb-4 flex items-center justify-around gap-4">
           <div className="bg-white/[0.02] rounded-2xl px-6 py-4 border border-white/[0.05] shadow-lg backdrop-blur-md w-full">
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 relative">

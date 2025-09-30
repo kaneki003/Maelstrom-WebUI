@@ -76,10 +76,8 @@ export function DashboardOverview() {
             {/* Decorative gradient corner */}
             <div
               className={`
-              absolute -bottom-6 -right-6 w-24 h-24 rounded-full blur-2xl opacity-20 transition-opacity
-              group-hover:opacity-30
-              ${stat.isPositive ? "bg-emerald-500" : "bg-red-500"}
-            `}
+              absolute -bottom-6 -right-6 w-24 h-24 rounded-full blur-2xl opacity-50 transition-opacity
+              group-hover:opacity-30 bg-blue-500 `}
             />
           </div>
 
