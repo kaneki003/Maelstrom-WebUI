@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { WalletModal } from "@/components/wallet-modal";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -70,13 +71,7 @@ export function Header() {
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
             <ThemeToggle />
-            <Button
-              data-tour="wallet-button"
-              onClick={() => setIsWalletModalOpen(true)}
-              className="bg-accent hover:bg-accent-cyan-2 text-accent-foreground glow-primary transition-all duration-300 hover:glow-accent"
-            >
-              Connect Wallet
-            </Button>
+            <ConnectButton accountStatus={"address"} showBalance={false} />
           </div>
         </div>
       </header>
