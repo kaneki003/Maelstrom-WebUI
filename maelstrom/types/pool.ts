@@ -1,3 +1,26 @@
+import { LiquidityPoolToken, Token } from "@/lib/mock-api"
+
+export interface Pool {
+  token: Token
+  reserve: Reserve
+  lpToken: LiquidityPoolToken
+  buyPrice: string
+  sellPrice: string
+  avgPrice: string
+  tokenRatio: string  
+  volume24h: string
+  totalLiquidty: string
+  apr: number
+  lastExchangeTs: number 
+  lastUpdated: number
+}
+
+export interface Reserve {
+  tokenReserve: string,
+  ethReserve: string
+}
+
+
 export interface PoolMock {
   slug: string;            
   symbol: string;         
